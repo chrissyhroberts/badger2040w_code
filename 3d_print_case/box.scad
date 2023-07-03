@@ -18,7 +18,7 @@ translate([83,2.5,0])cylinder(d=2.5,h=12);
 translate([83,46,0])cylinder(d=2.5,h=12);
 
 //add usb port
-translate([83,10,8])cube([10,10,4]);
+translate([83,10,8])cube([10,12,4]);
 
 //thin wall for RPI2040w
 translate([80,4.5,2])cube([5,30,14]);
