@@ -7,11 +7,11 @@ import urequests
 import jpegdec
 import machine
 
-
 rtc = machine.RTC()
+
 # Set your latitude/longitude here (find yours by right clicking in Google Maps!)
-LAT = 51.23348234908
-LNG = -2.42399823982398
+LAT = 53.38609085276884
+LNG = -1.4239983439328177
 TIMEZONE = "auto"  # determines time zone from lat/long
 
 URL = "http://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&daily=weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,winddirection_10m_dominant&timezone=" + TIMEZONE
@@ -20,13 +20,13 @@ URL2 = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + str(L
 
 # Display Setup
 display = badger2040.Badger2040()
+
+
 display.led(128)
 display.set_update_speed(2)
 
 jpeg = jpegdec.JPEG(display.display)
 
-# Connects to the wireless network. Ensure you have entered your details in WIFI_CONFIG.py :).
-display.connect()
 
 
 def get_data():
@@ -78,7 +78,7 @@ def get_data_airquality():
     print("Air quality : " , airquality)
     pm10 = airquality["pm10"][1]
     pm2_5 = airquality["pm2_5"][1]
-    uv_index = airquality["uv_index"][1]
+    uv_index = max(airquality["uv_index"])
     alder_pollen = airquality["alder_pollen"][1]
     birch_pollen = airquality["birch_pollen"][1]
     grass_pollen = airquality["grass_pollen"][1]
@@ -199,7 +199,7 @@ def draw_page():
 
         display.text(f"{date}", 0, 15, WIDTH - 105, 2)
 # show UV index
-        display.text(f"UV Index : {uv_index}", 100, 80, WIDTH - 105, 1)
+        display.text(f"Max UV Index : {uv_index}", 100, 80, WIDTH - 105, 1)
     else:
         display.set_pen(0)
         display.rectangle(0, 60, WIDTH, 25)
@@ -208,10 +208,15 @@ def draw_page():
 
     display.update()
 
+# Connects to the wireless network. Ensure you have entered your details in WIFI_CONFIG.py :).
+print("connecting")
+display.connect()
 
 get_data()
 get_data_airquality()
 draw_page()
+print("UV")
+print (uv_index)
 
 # Call halt in a loop, on battery this switches off power.
 # On USB, the app will exit when A+C is pressed because the launcher picks that up.
