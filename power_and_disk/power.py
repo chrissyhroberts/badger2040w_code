@@ -28,8 +28,7 @@ def cls():
     display.clear()
     display.set_pen(1)
     display.update()
-
-# get battery info - from here https://forums.pimoroni.com/t/badger-os-get-battery-level-failure/21598/8
+    
 def get_battery_info(full_battery=3.7, empty_battery=2.8):
     # Pico W voltage read function by darconeous on reddit: 
     # https://www.reddit.com/r/raspberrypipico/comments/xalach/comment/ipigfzu/
@@ -107,7 +106,6 @@ print("clearing screen")
 display = badger2040.Badger2040()
 WIDTH = badger2040.WIDTH # 296
 HEIGHT = badger2040.HEIGHT # 128
-display.rectangle(0, 60, WIDTH, 25)
 
 batlevel = get_battery_info()
 print(f"battery: {batlevel}%")
@@ -118,34 +116,37 @@ print(f"staterunning: {staterunning}%")
 print(get_battery_info())
 print(f"Battery 2 :  {get_battery_info()}")
 print(batlevel['voltage'])
+# Get the CPU frequency
+cpu_freq = round(cpu_freq/1000000,0)
 
 cls()
 # Draw a grid
-display.line(85, 0, 85, 300, 3)
+# Vertical lines
+display.line(85, 0, 85, 70, 3)
+display.line(50, 70, 50, 150, 3)
+display.line(200, 70, 200, 150, 3)
+
 display.line(0, 40, 300, 40, 3)
 display.line(0, 70, 300, 70, 3)
 
 # Add voltage across various pins
 display.text(f"Voltage ", 0, 15,WIDTH,2)
-display.text(f"| 26: {pin26} V | 27: {pin27} V", 85, 5,WIDTH,2)
-display.text(f"| 28: {pin28} V | 29: {pin28} V", 85, 20,WIDTH,2)
+display.text(f"26: {pin26} V | 27: {pin27} V", 95, 5,WIDTH,2)
+display.text(f"28: {pin28} V | 29: {pin28} V", 95, 20,WIDTH,2)
 
 # Show the battery state
 display.text(f"Battery ",0, 50,WIDTH,2)
-display.text(f"| {round(batlevel['voltage'],2)}V | {round(batlevel['percentage'],2)}%",85, 50,WIDTH,2)
+display.text(f"{round(batlevel['voltage'],2)}V | {round(batlevel['percentage'],2)}%",95, 50,WIDTH,2)
     
 # Show the disk space used/available    
 display.text(f"Disk", 0, 90,WIDTH,2)
-display.text(f"| Total : {round(diskusage[0]/10000,2)}", 85, 75,WIDTH,2)
-display.text(f"| Used   : {round(diskusage[1],2)}", 85, 90,WIDTH,2)
-display.text(f"| Free   : {round(diskusage[2],2)}", 85, 105,WIDTH,2)
-    
+display.text(f" Total : {round(diskusage[0]/10000,2)}", 55, 75,WIDTH,2)
+display.text(f" Used   : {round(diskusage[1],2)}", 55, 90,WIDTH,2)
+display.text(f" Free   : {round(diskusage[2],2)}", 55, 105,WIDTH,2)
+display.text(f" CPU", 205, 90,WIDTH,2)
+display.text(f" {cpu_freq} MHz", 205, 110,WIDTH,2)
+
 display.update()
 #utime.sleep_ms(2000)
 #badger_os.launch('launcher')
-
-# Add a short delay (e.g., 500 milliseconds)
-# Update the display
-
-
 
