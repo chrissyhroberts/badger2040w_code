@@ -143,8 +143,10 @@ display.text(f"Disk", 0, 90,WIDTH,2)
 display.text(f" Total : {round(diskusage[0]/10000,2)}", 55, 75,WIDTH,2)
 display.text(f" Used   : {round(diskusage[1],2)}", 55, 90,WIDTH,2)
 display.text(f" Free   : {round(diskusage[2],2)}", 55, 105,WIDTH,2)
-display.text(f" CPU", 205, 90,WIDTH,2)
-display.text(f" {cpu_freq} MHz", 205, 110,WIDTH,2)
+
+# Show the CPU frequency
+display.text(f" CPU", 205, 80,WIDTH,2)
+display.text(f" {cpu_freq} MHz", 205, 100,WIDTH,2)
 
 display.update()
 #utime.sleep_ms(2000)
