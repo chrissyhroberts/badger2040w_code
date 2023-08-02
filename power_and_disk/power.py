@@ -62,14 +62,18 @@ while True:
 
     cls()
     # Update all the text values using the stored voltage values
-    display.text(f"Voltage (ADC) | 26: {pin26} V | 27: {pin27} V | 28: {pin28} V 28: {pin28} V", 10, 10,WIDTH,1)
-    display.text(f"Battery : {batlevel}%", 10, 30,WIDTH,1)
-    display.text(f"disk | Total : {round(diskusage[0],2)} | Used : {round(diskusage[1],2)} | Free : {round(diskusage[2],2)}", 10, 50,WIDTH,1)
-    display.text(f"Pin 28: {pin28} V", 10, 70,WIDTH,1)
-    display.text(f"Pin 29: {pin29} V", 10, 90,WIDTH,1)
+    display.text(f"Voltage", 10, 20,WIDTH,2)
+    display.text(f"| 26: {pin26} V | 27: {pin27} V", 85, 10,WIDTH,2)
+    display.text(f"| 28: {pin28} V | 29: {pin28} V", 85, 30,WIDTH,2)
+
+    display.text(f"Battery",10, 50,WIDTH,2)
+    display.text(f"| {batlevel}%",85, 50,WIDTH,2)
+    
+    
+    display.text(f"Disk", 10, 90,WIDTH,2)
+    display.text(f"| Total : {round(diskusage[0],2)}", 85, 70,WIDTH,2)
+    display.text(f"| Used : {round(diskusage[1],2)}", 85, 90,WIDTH,2)
+    display.text(f"| Free : {round(diskusage[2],2)}", 85, 110,WIDTH,2)
     
     display.update()
     badger2040.sleep_for(1)
-
-# Add a short delay (e.g., 500 milliseconds)
-# Update the display
