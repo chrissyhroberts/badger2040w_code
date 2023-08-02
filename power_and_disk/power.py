@@ -117,7 +117,7 @@ print(get_battery_info())
 print(f"Battery 2 :  {get_battery_info()}")
 print(batlevel['voltage'])
 # Get the CPU frequency
-cpu_freq = round(cpu_freq/1000000,0)
+cpu_freq = round(machine.freq()/1000000,0)
 
 cls()
 # Draw a grid
