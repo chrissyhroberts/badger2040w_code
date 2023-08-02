@@ -101,7 +101,7 @@ print("clearing screen")
 #####################################
 # Display stats
 #####################################
-
+#
 # Initialise the badger screen
 display = badger2040.Badger2040()
 WIDTH = badger2040.WIDTH # 296
