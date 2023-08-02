@@ -28,7 +28,8 @@ def cls():
     display.clear()
     display.set_pen(1)
     display.update()
-    
+
+# get battery info - from here https://forums.pimoroni.com/t/badger-os-get-battery-level-failure/21598/8
 def get_battery_info(full_battery=3.7, empty_battery=2.8):
     # Pico W voltage read function by darconeous on reddit: 
     # https://www.reddit.com/r/raspberrypipico/comments/xalach/comment/ipigfzu/
