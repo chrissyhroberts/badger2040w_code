@@ -10,7 +10,7 @@ import machine
 rtc = machine.RTC()
 
 # Set your latitude/longitude here (find yours by right clicking in Google Maps!)
-LAT = 53.38609085276884
+LAT = 63.38609085276884
 LNG = -1.4239983439328177
 TIMEZONE = "auto"  # determines time zone from lat/long
 
