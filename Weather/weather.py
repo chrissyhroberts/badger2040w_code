@@ -164,7 +164,7 @@ def draw_page():
         elif day_weathercode[2] in [95, 96, 99]:  # codes for storm
             jpeg.open_file("/icons/icon-storm.jpg")
         display.set_pen(0)
-        display.text("+1Day", 160, 110, WIDTH - 105, 1.5)
+        display.text("+1 Day", 160, 110, WIDTH - 105, 1.5)
         jpeg.decode(190,90, jpegdec.JPEG_SCALE_HALF)
 
 # Show day after tomorrow's weather
@@ -180,7 +180,7 @@ def draw_page():
         elif day_weathercode[3] in [95, 96, 99]:  # codes for storm
             jpeg.open_file("/icons/icon-storm.jpg")
         display.set_pen(0)
-        display.text("+2Day", 230, 110, WIDTH - 105, 1.5)
+        display.text("+2 Day", 230, 110, WIDTH - 105, 1.5)
         jpeg.decode(260,90, jpegdec.JPEG_SCALE_HALF)
 
 #        display.text(f"Wind Direction: {winddirection}", int(WIDTH / 3), 68, WIDTH - 105, 2)
