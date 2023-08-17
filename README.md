@@ -1,6 +1,6 @@
 # badger2040w_code
 
-I'm tinkering around with a badger2040w
+This repo consolidates a bunch of code for the Pimoroni Badger2040 and Badger2040W
 
 ## 3d_print_case
 
