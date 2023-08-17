@@ -60,6 +60,8 @@ The data that populate this app come from the excellent resources at at https://
 
 **NOTE 2 : Because this project relies on the efforts and goodwill of the maintainers of www.hamqsl.com, the design of this app comes with a potential single point of failure (SPOF) risk. I don't know where the data really comes from and I'm sure that there's a more sustainable and lower risk route to getting this data through an API somewhere. If you know what the source is, then I'd appreciate it if you could share this info via the issues**
 
+In order for the local weather to be properly displayed, you should change the latitude and longitude in the script to match your location. 
+
 ![/img/clk2.png](/img/space.jpeg)
 
 
