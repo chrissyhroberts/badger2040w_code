@@ -56,7 +56,7 @@ I’ve tested that this method works both for a li-on 3.7 V battery plugged in t
 The space app adds functions to display a variety of data that can be useful to HAM radio / Amateur radio enthusiasts. 
 The data that populate this app come from the excellent resources at at https://www.hamqsl.com/solarxml.php
 
-**NOTE: Please respect the request of the maintainers of www.hamqsl.com that you don't put too much strain on their resource. Downloading data more than once an hour is pointless and could harm their ability to continue to provide the data.**
+**NOTE: Please respect the request of the maintainers of www.hamqsl.com that you don't put too much strain on their resource. Downloading data more than once an hour is pointless and could harm their ability to continue to provide the data. If you value this, please donate to Paul L Herrman (N0NBH) who maintains it : [Donate here via PayPal](https://www.paypal.com/donate?token=PGsbxxaNxFueJmdq1fgPek22o4yU0UR6tybC7O1mUM66rCnWMDxZjvQtmFIAISSAwA2GZXfBMNPVzMTY)**
 
 **NOTE 2 : Because this project relies on the efforts and goodwill of the maintainers of www.hamqsl.com, the design of this app comes with a potential single point of failure (SPOF) risk. I don't know where the data really comes from and I'm sure that there's a more sustainable and lower risk route to getting this data through an API somewhere. If you know what the source is, then I'd appreciate it if you could share this info via the issues**
 
