@@ -51,6 +51,18 @@ print(rtc_pcf85063a.datetime())
 
 I’ve tested that this method works both for a li-on 3.7 V battery plugged in to the batt socket on the back, and also for a badger running on a USB cable connected to a mobile phone charger pack. The RTC keeps running on both, even though I had to push the button on the charger pack to start pushing buttons. It seems that the buttons on the badger can’t trigger the activation of the generic mobile charger, but the RTC can keep running.
 
+## Space
+
+The space app adds functions to display a variety of data that can be useful to HAM radio / Amateur radio enthusiasts. 
+The data that populate this app come from the excellent resources at at https://www.hamqsl.com/solarxml.php
+
+**NOTE: Please respect the request of the maintainers of www.hamqsl.com that you don't put too much strain on their resource. Downloading data more than once an hour is pointless and could harm their ability to continue to provide the data.**
+
+**NOTE 2 : Because this project relies on the efforts and goodwill of the maintainers of www.hamqsl.com, the design of this app comes with a potential single point of failure (SPOF) risk. I don't know where the data really comes from and I'm sure that there's a more sustainable and lower risk route to getting this data through an API somewhere. If you know what the source is, then I'd appreciate it if you could share this info via the issues**
+
+![/img/clk2.png](/img/space.jpeg)
+
+
 ## Weather 
 
 This is an updated version of the example weather app for the Badger2040W. I fiddled around with the calls to the open-meteo API, adding a bunch of new functions and data outputs. This now adds info about pollen levels, particulates in the air, rainfall level and probability, UV index, winds, sunrise and sunset. It also adds a 2 day forecast. 
