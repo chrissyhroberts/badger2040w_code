@@ -286,9 +286,7 @@ draw_page()
 # Call halt in a loop, on battery this switches off power.
 # On USB, the app will exit when A+C is pressed because the launcher picks that up.
 while True:
-    badger2040.sleep_for(30)
-    get_data()
-    get_solar_weather()
-    draw_page()
+    display.keepalive()
+    display.halt()
 
 
