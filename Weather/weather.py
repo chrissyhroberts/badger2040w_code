@@ -65,26 +65,36 @@ def get_data():
     r.close()
 
 def get_data_airquality():
-    global pm10,pm2_5,alder_pollen,uv_index,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen
+    global pm10, pm2_5, alder_pollen, uv_index, birch_pollen, grass_pollen, mugwort_pollen, olive_pollen, ragweed_pollen
+
     print(f"Requesting URL: {URL2}")
     r2 = urequests.get(URL2)
+
     # open the json data
     j2 = r2.json()
     print("Airquality Data obtained!")
     print(j2)
-    
-    #parse relevant data from json
-    airquality= j2["hourly"]
-    print("Air quality : " , airquality)
-    pm10 = airquality["pm10"][1]
-    pm2_5 = airquality["pm2_5"][1]
-    uv_index = max(airquality["uv_index"])
-    alder_pollen = airquality["alder_pollen"][1]
-    birch_pollen = airquality["birch_pollen"][1]
-    grass_pollen = airquality["grass_pollen"][1]
-    mugwort_pollen = airquality["mugwort_pollen"][1]
-    olive_pollen= airquality["olive_pollen"][1]
-    ragweed_pollen= airquality["ragweed_pollen"][1]
+
+    # parse relevant data from json
+    airquality = j2["hourly"]
+    print("Air quality:", airquality)
+
+    # If a key doesn't exist, it'll default to a list with a single None item
+    pm10 = airquality.get("pm10", [None])[1]
+    pm2_5 = airquality.get("pm2_5", [None])[1]
+
+    # Ensure uv_index list has no None values before applying max
+    uv_values = [val for val in airquality.get("uv_index", []) if val is not None]
+    uv_index = max(uv_values) if uv_values else 'NA'
+
+    alder_pollen = airquality.get("alder_pollen", [None])[1]
+    birch_pollen = airquality.get("birch_pollen", [None])[1]
+    grass_pollen = airquality.get("grass_pollen", [None])[1]
+    mugwort_pollen = airquality.get("mugwort_pollen", [None])[1]
+    olive_pollen = airquality.get("olive_pollen", [None])[1]
+    ragweed_pollen = airquality.get("ragweed_pollen", [None])[1]
+
+    print(f"{uv_index} UVIndex ")
 
     r2.close()
 

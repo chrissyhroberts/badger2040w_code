@@ -149,6 +149,13 @@ display.text(f" CPU", 205, 80,WIDTH,2)
 display.text(f" {cpu_freq} MHz", 205, 100,WIDTH,2)
 
 display.update()
+
+
 #utime.sleep_ms(2000)
 #badger_os.launch('launcher')
 
+# Call halt in a loop, on battery this switches off power.
+# On USB, the app will exit when A+C is pressed because the launcher picks that up.
+while True:
+    display.keepalive()
+    display.halt()
