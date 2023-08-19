@@ -6,7 +6,13 @@ This repo consolidates a bunch of code for the Pimoroni Badger2040 and Badger204
 
 This is an openscad model and STL file for a really simple backplate for the badger2040W. You can screw your badger on to this with some small screws. It has a space for the USB socket and also ample room in the back for a li-on battery pack. I used a 1200 mAh PKCELL from Pimoroni. 
 
+## Charts
 
+These scripts add some basic data visualisation methods to the badger. These can be used in projects that perform data logging across time, or any context where a dataset is pulled from an onboard or remote data source. There's limits on how big a table can be ingested, which probably simply relate to (a) the limited storage capacity and (b) the available RAM.
+
+![/img/clk1.png](/img/barchart.jpg)
+![/img/clk1.png](/img/heatmap_matrix.jpg)
+![/img/clk1.png](/img/heatmap_summary.jpg)
 ## Clock_Stuff
 
 contains a couple of scripts which explore how the RTC functions
