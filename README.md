@@ -70,3 +70,9 @@ In order for the local weather to be properly displayed, you should change the l
 This is an updated version of the example weather app for the Badger2040W. I fiddled around with the calls to the open-meteo API, adding a bunch of new functions and data outputs. This now adds info about pollen levels, particulates in the air, rainfall level and probability, UV index, winds, sunrise and sunset. It also adds a 2 day forecast. 
 
 ![/img/weather.png](/img/weather.png)
+
+
+
+## Support this project
+
+If you would like to support this project, please feel free to pay what you want https://t.co/GpUNwewruR
