@@ -2,7 +2,9 @@
   "files": [
     "examples/weather.py",
     "examples/icon-weather.jpg",
+    "examples/space.py",
     "examples/icon-space.jpg",
-    "examples/space.py"
+    "examples/power.py",
+    "examples/icon-power.jpg"
   ]
 }
