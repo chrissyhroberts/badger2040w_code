@@ -3,8 +3,6 @@
     "examples/weather.py",
     "examples/icon-weather.jpg",
     "examples/icon-space.jpg",
-    "examples/space.py",
-    "examples/apps.py",
-    "examples/icon-apps.jpg"
+    "examples/space.py"
   ]
 }
