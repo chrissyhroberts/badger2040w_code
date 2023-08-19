@@ -2,9 +2,43 @@
 
 This repo consolidates a bunch of code for the Pimoroni Badger2040 and Badger2040W
 
-## 3d_print_case
+## App provisioning
 
-This is an openscad model and STL file for a really simple backplate for the badger2040W. You can screw your badger on to this with some small screws. It has a space for the USB socket and also ample room in the back for a li-on battery pack. I used a 1200 mAh PKCELL from Pimoroni. 
+Using Thonny to copy your code and apps on to the badger2040W can be a bit of a pain. This functionality allows a user to provision a list of apps to the device remotely. The main function here is that you can write an app and stick it in an 'examples' folder on a github repo or other source. The 'apps' app then consults a json file which maintains a list of the apps that you currently want on your badger2040W. It downloads the apps from your repo, then restarts the launcher to update the badgeros homepage.
+
+You'll need to make a new file `provisioning_manifest.json`
+
+```
+{
+  "files": [
+    "examples/weather.py",
+    "examples/icon-weather.jpg",
+    "examples/space.py",
+    "examples/icon-space.jpg",
+    "examples/power.py",
+    "examples/icon-power.jpg"
+  ]
+}
+```
+
+Don't forget to add an icon for each app, or the system will freeze. 
+
+The first time you want to run the provisioning app, you'll need to manually install it with thonny. 
+You'll also need the `WIFI_CONFIG.py` to be configured.
+
+Finally, you'll need to set the target for the repo. 
+
+Change the line `github_repo_url = "https://raw.githubusercontent.com/chrissyhroberts/badger2040w_code/main/"`
+to match your own target. Put the `provisioning_manifest.json` file in the root of the repo. 
+
+
+After the first install you won't _need_ Thonny anymore.
+
+![/img/clk1.png](/img/apps_provision_01.jpg)
+![/img/clk1.png](/img/apps_provision_02.jpg)
+
+
+
 
 ## Charts
 
@@ -77,6 +111,9 @@ This is an updated version of the example weather app for the Badger2040W. I fid
 
 ![/img/weather.png](/img/weather.png)
 
+## 3d_print_case
+
+This is an openscad model and STL file for a really simple backplate for the badger2040W. You can screw your badger on to this with some small screws. It has a space for the USB socket and also ample room in the back for a li-on battery pack. I used a 1200 mAh PKCELL from Pimoroni. 
 
 
 ## Support this project
