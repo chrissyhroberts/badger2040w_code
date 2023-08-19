@@ -1,7 +1,7 @@
 {
   "files": [
     "examples/weather.py",
-    "examples/icon-weather.py",
+    "examples/icon-weather.jpg",
     "examples/icon-space.jpg",
     "examples/space.py"
   ]
