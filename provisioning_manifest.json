@@ -7,6 +7,8 @@
     { "path": "examples/icon-space.jpg",   	"folder": "examples"},
     { "path": "examples/power.py",		    "folder": "examples"},
     { "path": "examples/icon-power.jpg",    "folder": "examples"},
+    { "path": "data/data.csv",		    	"folder": "data"},
+    { "path": "data/data2.csv",		    	"folder": "data"},
     { "path": "icons/icon-sun.jpg",		    "folder": "icons"},
     { "path": "icons/icon-snow.jpg",	    "folder": "icons"},
     { "path": "icons/icon-storm.jpg",       "folder": "icons"},

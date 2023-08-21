@@ -12,7 +12,6 @@ rtc = machine.RTC()
 # Set your latitude/longitude here (find yours by right clicking in Google Maps!)
 LAT = 52.104532 
 LNG = -0.022701
-
 TIMEZONE = "auto"  # determines time zone from lat/long
 
 URL = "http://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&daily=weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,winddirection_10m_dominant&timezone=" + TIMEZONE
