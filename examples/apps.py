@@ -3,6 +3,7 @@ import ujson as json
 import machine
 import badger2040
 import os
+import time
 
 from badger2040 import WIDTH
 
