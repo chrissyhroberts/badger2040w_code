@@ -1,4 +1,5 @@
 {
+  "folders_to_clean": ["examples", "icons"],
   "files": [
     {
       "path": "examples/weather.py",
@@ -26,10 +27,6 @@
     },
     {
       "path": "icons/icon-sun.jpg",
-      "folder": "icons"
-    },
-    {
-      "path": "icons/icon-rain.jpg",
       "folder": "icons"
     },
     {
