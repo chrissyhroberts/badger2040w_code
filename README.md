@@ -1,29 +1,44 @@
-# badger2040w_code
+# Badger 2040W code resources
 
 This repo consolidates a bunch of code for the Pimoroni Badger2040 and Badger2040W
 
-## App provisioning
+## App provisioning [examples/apps.py](examples/apps.py) and [examples/icon-apps.jpg](examples/icon-apps.jpg) 
 
 Using Thonny to copy your code and apps on to the badger2040W can be a bit of a pain. This functionality allows a user to provision a list of apps to the device remotely. The main function here is that you can write an app and stick it in an 'examples' folder on a github repo or other source. The 'apps' app then consults a json file which maintains a list of the apps that you currently want on your badger2040W. It downloads the apps from your repo, then restarts the launcher to update the badgeros homepage.
 
 You'll need to make a new file `provisioning_manifest.json`.
 
-The contents are a simple list of files you want on the badger right now.
+The contents are two lists `folders_to_clean` and `files`
+
+`folders_to_clean` tells the provisioning app to delete the contents of folders specified here. This has the effect of cleaning out things that are not on the list
+`files` provides [a] the path (on github) and filename of files you want to add and [b] the target folder on the badger 2040W. 
 
 ```
 {
+  "folders_to_clean": ["examples", "icons","data"],
   "files": [
-    "examples/weather.py",
-    "examples/icon-weather.jpg",
-    "examples/space.py",
-    "examples/icon-space.jpg",
-    "examples/power.py",
-    "examples/icon-power.jpg"
+    { "path": "examples/apps.py",		"folder": "examples"},
+    { "path": "examples/icon-apps.jpg",	"folder": "examples"},    
+    { "path": "examples/weather.py",		"folder": "examples"},
+    { "path": "examples/icon-weather.jpg",	"folder": "examples"},
+    { "path": "examples/space.py",			"folder": "examples"},
+    { "path": "examples/icon-space.jpg",   	"folder": "examples"},
+    { "path": "examples/power.py",		    "folder": "examples"},
+    { "path": "examples/icon-power.jpg",    "folder": "examples"},
+    { "path": "data/data.csv",		    	"folder": "data"},
+    { "path": "data/data2.csv",		    	"folder": "data"},
+    { "path": "icons/icon-sun.jpg",		    "folder": "icons"},
+    { "path": "icons/icon-snow.jpg",	    "folder": "icons"},
+    { "path": "icons/icon-storm.jpg",       "folder": "icons"},
+    { "path": "icons/icon-rain.jpg",       "folder": "icons"},
+    { "path": "icons/icon-cloud.jpg",       "folder": "icons"}
   ]
 }
 ```
 
-Don't forget to add an icon for each app, or the system will freeze. 
+Ensure that you always have the `apps.py` and `icon-apps.jpg` on this list, or you'll immediately lose the provisioning functionality
+
+Don't forget to add an icon for each app in the `examples` folder, or the system will freeze. 
 
 The first time you want to run the provisioning app, you'll need to manually install it with thonny. 
 You'll also need the `WIFI_CONFIG.py` to be configured.
@@ -42,14 +57,15 @@ After the first install you won't _need_ Thonny anymore.
 
 
 
-## Charts
+## [Charts](charts/heatmap.py)
 
 These scripts add some basic data visualisation methods to the badger. These can be used in projects that perform data logging across time, or any context where a dataset is pulled from an onboard or remote data source. There's limits on how big a table can be ingested, which probably simply relate to (a) the limited storage capacity and (b) the available RAM.
 
 ![/img/clk1.png](/img/barchart.jpg)
 ![/img/clk1.png](/img/heatmap_matrix.jpg)
 ![/img/clk1.png](/img/heatmap_summary.jpg)
-## Clock_Stuff
+
+## [Clock_Stuff](Clock_Stuff)
 
 contains a couple of scripts which explore how the RTC functions
 
@@ -93,7 +109,7 @@ print(rtc_pcf85063a.datetime())
 
 I’ve tested that this method works both for a li-on 3.7 V battery plugged in to the batt socket on the back, and also for a badger running on a USB cable connected to a mobile phone charger pack. The RTC keeps running on both, even though I had to push the button on the charger pack to start pushing buttons. It seems that the buttons on the badger can’t trigger the activation of the generic mobile charger, but the RTC can keep running.
 
-## Space
+## Space Weather [examples/space.py](examples/space.py) and [examples/icon-space.jpg](examples/icon-space.jpg)
 
 The space app adds functions to display a variety of data that can be useful to HAM radio / Amateur radio enthusiasts. 
 The data that populate this app come from the excellent resources at at https://www.hamqsl.com/solarxml.php
@@ -107,13 +123,13 @@ In order for the local weather to be properly displayed, you should change the l
 ![/img/clk2.png](/img/space.jpeg)
 
 
-## Weather 
+## Terrestrial Weather [examples/weather.py](examples/weather.py) and [examples/icon-weather.jpg](examples/icon-weather.jpg)
 
 This is an updated version of the example weather app for the Badger2040W. I fiddled around with the calls to the open-meteo API, adding a bunch of new functions and data outputs. This now adds info about pollen levels, particulates in the air, rainfall level and probability, UV index, winds, sunrise and sunset. It also adds a 2 day forecast. 
 
 ![/img/weather.png](/img/weather.png)
 
-## 3d_print_case
+## [3D Printable Badger2040 / Badger2040W case](3d_print_case)
 
 This is an openscad model and STL file for a really simple backplate for the badger2040W. You can screw your badger on to this with some small screws. It has a space for the USB socket and also ample room in the back for a li-on battery pack. I used a 1200 mAh PKCELL from Pimoroni. 
 
