@@ -2,6 +2,7 @@ import urequests as requests
 import ujson as json
 import machine
 import badger2040
+import badger_os
 import os
 import time
 
