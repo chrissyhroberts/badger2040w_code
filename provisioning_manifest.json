@@ -1,15 +1,48 @@
 {
   "files": [
-    "examples/weather.py",
-    "examples/icon-weather.jpg",
-    "examples/space.py",
-    "examples/icon-space.jpg",
-    "examples/power.py",
-    "examples/icon-power.jpg",
-    "icons/icon-sun.jpg",
-    "icons/icon-rain.jpg",
-    "icons/icon-snow.jpg",
-    "icons/icon-storm.jpg",
-    "icons/icon-cloud.jpg",
+    {
+      "path": "examples/weather.py",
+      "folder": "examples"
+    },
+    {
+      "path": "examples/icon-weather.jpg",
+      "folder": "examples"
+    },
+    {
+      "path": "examples/space.py",
+      "folder": "examples"
+    },
+    {
+      "path": "examples/icon-space.jpg",
+      "folder": "examples"
+    },
+    {
+      "path": "examples/power.py",
+      "folder": "examples"
+    },
+    {
+      "path": "examples/icon-power.jpg",
+      "folder": "examples"
+    },
+    {
+      "path": "icons/icon-sun.jpg",
+      "folder": "icons"
+    },
+    {
+      "path": "icons/icon-rain.jpg",
+      "folder": "icons"
+    },
+    {
+      "path": "icons/icon-snow.jpg",
+      "folder": "icons"
+    },
+    {
+      "path": "icons/icon-storm.jpg",
+      "folder": "icons"
+    },
+    {
+      "path": "icons/icon-cloud.jpg",
+      "folder": "icons"
+    }
   ]
 }
