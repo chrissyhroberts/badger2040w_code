@@ -1,45 +1,15 @@
 {
-  "folders_to_clean": ["examples", "icons"],
+  "folders_to_clean": ["examples", "icons","data"],
   "files": [
-    {
-      "path": "examples/weather.py",
-      "folder": "examples"
-    },
-    {
-      "path": "examples/icon-weather.jpg",
-      "folder": "examples"
-    },
-    {
-      "path": "examples/space.py",
-      "folder": "examples"
-    },
-    {
-      "path": "examples/icon-space.jpg",
-      "folder": "examples"
-    },
-    {
-      "path": "examples/power.py",
-      "folder": "examples"
-    },
-    {
-      "path": "examples/icon-power.jpg",
-      "folder": "examples"
-    },
-    {
-      "path": "icons/icon-sun.jpg",
-      "folder": "icons"
-    },
-    {
-      "path": "icons/icon-snow.jpg",
-      "folder": "icons"
-    },
-    {
-      "path": "icons/icon-storm.jpg",
-      "folder": "icons"
-    },
-    {
-      "path": "icons/icon-cloud.jpg",
-      "folder": "icons"
-    }
+    { "path": "examples/weather.py",		"folder": "examples"},
+    { "path": "examples/icon-weather.jpg",	"folder": "examples"},
+    { "path": "examples/space.py",			"folder": "examples"},
+    { "path": "examples/icon-space.jpg",   	"folder": "examples"},
+    { "path": "examples/power.py",		    "folder": "examples"},
+    { "path": "examples/icon-power.jpg",    "folder": "examples"},
+    { "path": "icons/icon-sun.jpg",		    "folder": "icons"},
+    { "path": "icons/icon-snow.jpg",	    "folder": "icons"},
+    { "path": "icons/icon-storm.jpg",       "folder": "icons"},
+    { "path": "icons/icon-cloud.jpg",       "folder": "icons"}
   ]
 }
