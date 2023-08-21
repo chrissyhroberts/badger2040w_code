@@ -6,7 +6,9 @@ This repo consolidates a bunch of code for the Pimoroni Badger2040 and Badger204
 
 Using Thonny to copy your code and apps on to the badger2040W can be a bit of a pain. This functionality allows a user to provision a list of apps to the device remotely. The main function here is that you can write an app and stick it in an 'examples' folder on a github repo or other source. The 'apps' app then consults a json file which maintains a list of the apps that you currently want on your badger2040W. It downloads the apps from your repo, then restarts the launcher to update the badgeros homepage.
 
-You'll need to make a new file `provisioning_manifest.json`
+You'll need to make a new file `provisioning_manifest.json`.
+
+The contents are a simple list of files you want on the badger right now.
 
 ```
 {
