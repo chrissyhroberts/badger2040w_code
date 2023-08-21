@@ -2,9 +2,7 @@ import urequests as requests
 import ujson as json
 import machine
 import badger2040
-import badger_os
 import os
-import time
 
 from badger2040 import WIDTH
 
@@ -151,9 +149,9 @@ for index, file_info in enumerate(files_to_keep, start=1):
 ##########################################################################################
 clear()
 display.text(f"Provisioning complete", 10, 15, WIDTH, 1)
+display.text(f"Press a + c to exit to badger OS", 10, 25, WIDTH, 1)
+
 display.update()
-time.sleep(0.05)
-badger_os.launch('launcher')
 ##########################################################################################
 ##########################################################################################
 # END
