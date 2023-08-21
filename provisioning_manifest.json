@@ -5,6 +5,11 @@
     "examples/space.py",
     "examples/icon-space.jpg",
     "examples/power.py",
-    "examples/icon-power.jpg"
+    "examples/icon-power.jpg",
+    "icons/icon-sun.jpg",
+    "icons/icon-rain.jpg",
+    "icons/icon-snow.jpg",
+    "icons/icon-storm.jpg",
+    "icons/icon-cloud.jpg",
   ]
 }
