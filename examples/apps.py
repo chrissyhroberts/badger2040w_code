@@ -11,6 +11,31 @@ display.set_update_speed(2)
 display.connect()
 
 ##########################################################################################
+# USER DEFINED VARIABLES 
+# Set the github repo
+# Note that you need to specify the raw.githubusercontent.com/ version of the URL
+##########################################################################################
+
+github_repo_url = "https://raw.githubusercontent.com/chrissyhroberts/badger2040w_code/main/"
+
+##########################################################################################
+##########################################################################################
+
+
+
+
+
+
+
+##########################################################################################
+##########################################################################################
+# FUNCTIONS
+##########################################################################################
+##########################################################################################
+
+
+
+##########################################################################################
 # Define a function that clears the screen and prints a header row
 ##########################################################################################
 def clear():
@@ -24,6 +49,10 @@ def clear():
     display.text("Badger App provisioning", 10, 1, WIDTH, 0.6) # parameters are left padding, top padding, width of screen area, font size
     display.set_pen(0)
 
+##########################################################################################
+# Define a function that downloads a file from the manifest
+##########################################################################################
+
 def download_file(url, destination_path):
     print(f"Downloading {url} to {destination_path}")
     response = requests.get(url)
@@ -34,12 +63,24 @@ def download_file(url, destination_path):
     else:
         print("Failed to download:", url)
 
-github_repo_url = "https://raw.githubusercontent.com/chrissyhroberts/badger2040w_code/main/"
-provisioning_manifest_url = github_repo_url + "provisioning_manifest.json"
 
+
+
+
+
+
+##########################################################################################
+##########################################################################################
+# MAIN
+##########################################################################################
+##########################################################################################
+
+provisioning_manifest_url = github_repo_url + "provisioning_manifest.json"
 print(f"provisioning manifest URL is : {provisioning_manifest_url}")
 
+##########################################################################################
 # Retrieve provisioning manifest
+##########################################################################################
 manifest_response = requests.get(provisioning_manifest_url)
 
 if manifest_response.status_code == 200:
@@ -51,7 +92,9 @@ if manifest_response.status_code == 200:
     folders_to_clean = manifest_data.get("folders_to_clean", [])
     files_to_keep = manifest_data["files"]
 
-    # Clean up folders specified in the manifest
+    ##########################################################################################
+    # Clean up folders specified in the manifest - i.e. delete contents of these folders
+    ##########################################################################################
     for folder in folders_to_clean:
         print(f"Cleaning up folder: {folder}")
         folder_path = "./" + folder + "/"
@@ -67,8 +110,9 @@ if manifest_response.status_code == 200:
                     pass
         except OSError:
             pass
-
-    # Download and add files from manifest
+    ##########################################################################################
+    # Download and add files from manifest to the appropriate folders
+    ##########################################################################################
     print("Downloading files from manifest...")
     clear()
     display.text(f"Downloading files in manifest...", 10, 15, WIDTH, 1)
@@ -102,6 +146,15 @@ for index, file_info in enumerate(files_to_keep, start=1):
         display.text(f"Downloading files in manifest...", 10, 15, WIDTH, 1)
         display.update()
 
+##########################################################################################
 clear()
 display.text(f"Provisioning complete", 10, 15, WIDTH, 1)
+display.text(f"Press a + c to exit to badger OS", 10, 25, WIDTH, 1)
+
 display.update()
+##########################################################################################
+##########################################################################################
+# END
+##########################################################################################
+##########################################################################################
+
