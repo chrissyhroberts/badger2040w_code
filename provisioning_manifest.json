@@ -1,6 +1,8 @@
 {
   "folders_to_clean": ["examples", "icons","data"],
   "files": [
+    { "path": "examples/apps.py",		"folder": "examples"},
+    { "path": "examples/icon-apps.jpg",	"folder": "examples"},    
     { "path": "examples/weather.py",		"folder": "examples"},
     { "path": "examples/icon-weather.jpg",	"folder": "examples"},
     { "path": "examples/space.py",			"folder": "examples"},
