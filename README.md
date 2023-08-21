@@ -133,6 +133,9 @@ This is an updated version of the example weather app for the Badger2040W. I fid
 
 This is an openscad model and STL file for a really simple backplate for the badger2040W. You can screw your badger on to this with some small screws. It has a space for the USB socket and also ample room in the back for a li-on battery pack. I used a 1200 mAh PKCELL from Pimoroni. 
 
+![/img/3d_print_case.png](/img/3d_print_case.png)
+![/img/3d_print_case_2.jpeg](/img/3d_print_case_2.jpeg)
+
 
 ## Support this project
 
