@@ -17,7 +17,7 @@ def voltogetter(pin):
     adc_value = adc.read_u16()
 
     # Get the reference voltage (assuming 3.3V)
-    reference_voltage = 3.3
+    reference_voltage = 4.9
 
     # Convert ADC value to voltage
     voltage = adc_value / 65535 * reference_voltage
