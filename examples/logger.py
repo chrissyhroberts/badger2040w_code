@@ -208,11 +208,16 @@ try:
         # Reset temperature_values list after 200 measurements
         if measurement_count == 200:
             temperature_values = []
+            humidity_values = []  # Clear humidity values too
+            clear()  # Clear the display
+            print("Resetting data and screen after 200 measurements.")  # Optional log message
             measurement_count = 0
 
+
         # Sleep for a while before the next observation
-        utime.sleep(2)  # Adjust the sleep duration as needed
+        badger2040.sleep_for(1)
 
 except KeyboardInterrupt:
     pass
+
 
