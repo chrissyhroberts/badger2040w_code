@@ -10,8 +10,10 @@ display = badger2040.Badger2040()
 display.set_update_speed(2)
 display.set_thickness(4)
 
-
+####################################################################################
 # Define a function that clears the screen and prints a header row
+####################################################################################
+
 def clear():
     display.set_pen(15)
     display.clear()
@@ -24,6 +26,11 @@ def clear():
     display.text("Temp/Humidity Logger", 10, 1, WIDTH, 0.6)
     display.set_pen(0)
 
+
+####################################################################################
+# Define a function that gets an iso timestamp
+####################################################################################
+
 def get_iso_timestamp():
     now = utime.localtime()
     iso_timestamp = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}".format(
@@ -32,8 +39,9 @@ def get_iso_timestamp():
     return iso_timestamp
 
 
-
-# Define the chart area
+####################################################################################
+# Define the constants for the chart area
+####################################################################################
 chart_width = 200
 chart_height = 80  # Fixed chart height of 80 pixels
 chart_origin_x = int(0.5 * (WIDTH - chart_width))
@@ -42,8 +50,9 @@ chart_origin_y = int(0.5 * (HEIGHT - chart_height))
 legend_origin_x = chart_origin_x + chart_width + 20  # 20 pixels padding from the right end of the chart
 legend_origin_y = chart_origin_y
 
-
-# Check if the directory exists, and create it if it doesn't
+####################################################################################
+# Check if the ./data directory exists, and create it if it doesn't
+####################################################################################
 try:
     os.mkdir("data")
 except OSError as e:
@@ -53,18 +62,36 @@ except OSError as e:
         raise  # Raise the exception for other errors
 
     
-    
+####################################################################################   
 # Define the path to the CSV file
+####################################################################################
 csv_file_path = "data/logged_data.csv"
 
 
 
+####################################################################################
+# Create variables for temp and humidity
+####################################################################################
 
 temperature_values = []
 humidity_values = []
 
+####################################################################################
+# Set default scale for y axis
+####################################################################################
+
 y_scale = 100  # Initial y-axis scale (0 to 80)
+
+####################################################################################
+# Define how many measurements are held in memory at present
+####################################################################################
+
 measurement_count = 0
+
+
+####################################################################################
+# Main 
+####################################################################################
 
 try:
     while True:
@@ -75,8 +102,8 @@ try:
         # Create the sensor object using I2C
         sensor = ahtx0.AHT20(i2c)
         # Read temperature from the sensor
-       # Read temperature from the sensor
         temperature = sensor.temperature
+        # Read relative humidity from the sensor
         humidity = sensor.relative_humidity
 
         # Get the current timestamp in ISO format
@@ -89,7 +116,8 @@ try:
         # Store the temperature and humidity value
         temperature_values.append(temperature)
         humidity_values.append(humidity)
-
+		
+		# increment the number of measurements held in memory
         measurement_count += 1
 
         # Check button UP state
@@ -139,7 +167,8 @@ try:
         for i in range(1, len(temperature_values)):
             x1 = chart_origin_x + int((i - 1) * chart_width / (len(temperature_values) - 1))
             x2 = chart_origin_x + int(i * chart_width / (len(temperature_values) - 1))
-       # Draw the humidity data as lines
+       
+        # Draw the humidity data as lines
         for i in range(1, len(humidity_values)):
             x1 = chart_origin_x + int((i - 1) * chart_width / (len(humidity_values) - 1))
             x2 = chart_origin_x + int(i * chart_width / (len(humidity_values) - 1))
@@ -163,14 +192,17 @@ try:
             average_humidity = sum(humidity_values) / len(humidity_values)
 
             display.set_pen(15)  # Pen color 0 is black
+            
             # Display average temperature & humidity
             display.text("Avg: {:.2f}°C".format(average_temp), 195, HEIGHT-9, WIDTH, 0.6)
             display.text("| {:.2f}%RH".format(average_humidity), 250, HEIGHT-9, WIDTH, 0.6)
+            
             # Display current temperature & humidity
             display.text("Current: {:.2f}°C".format(temperature), 175, 1, WIDTH, 0.6)  # Print current temperature
             display.text("| {:.2f}%RH".format(humidity), 250, 1, WIDTH, 0.6)
             print(f"Average temperature: {average_temp} | Current temperature: {temperature} | Humidity {humidity}")
 
+        # Update the display on Badger
         display.update()
 
         # Reset temperature_values list after 200 measurements
