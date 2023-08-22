@@ -122,6 +122,15 @@ In order for the local weather to be properly displayed, you should change the l
 
 ![/img/clk2.png](/img/space.jpeg)
 
+## Temperature and Humidity Logger (AHT20 unit) [examples/weather.py](examples/logger.py) and [examples/icon-weather.jpg](examples/icon-logger.jpg) and [lib/ahtx0.py](lib/ahtx0.py)
+
+The [AHT20](https://learn.adafruit.com/adafruit-aht20/overview) connects to the QWIIC socket on the badger2040W and provides a rough temperature and humidity measurement on a schedule of your choice. It is controlled through the i2c protocol using a [library obtained here](https://raw.githubusercontent.com/targetblank/micropython_ahtx0/master/ahtx0.py) and copied to the [lib](lib) folder of this repo. 
+
+The logger has basic functions to (a) collect, (b) visualise and (c) store to file, a set of measurements from the AHT20. This provides a framework for other types of environmental sensor connected via QWIIC. 
+
+![/img/logger_1.jpeg](/img/logger_1.jpeg)
+![/img/logger_2.jpeg](/img/logger_2.jpeg)
+
 
 ## Terrestrial Weather [examples/weather.py](examples/weather.py) and [examples/icon-weather.jpg](examples/icon-weather.jpg)
 
