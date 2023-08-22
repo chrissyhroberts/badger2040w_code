@@ -129,10 +129,9 @@ try:
         # Calculate and display the average temperature
         if temperature_values:
             average_temp = sum(temperature_values) / len(temperature_values)
-            display.set_pen(0)  # Pen color 0 is black
-            display.text("Avg: {:.2f}°C".format(average_temp), 200, 20, WIDTH, 0.6)
-            display.text("Current: {:.2f}°C".format(temperature), 200, 30, WIDTH, 0.6)  # Print current temperature
-            display.text(f"Iteration: {measurement_count}", 200, 40, WIDTH, 0.6)  # Print current temperature
+            display.set_pen(15)  # Pen color 0 is black
+            display.text("Avg: {:.2f}°C".format(average_temp), 240, 1, WIDTH, 0.6)
+            display.text("Current: {:.2f}°C".format(temperature), 150, 1, WIDTH, 0.6)  # Print current temperature
             print(f"Average temperature: {average_temp} | Current temperature: {temperature}")
 
         display.update()
