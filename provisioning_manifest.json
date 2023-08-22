@@ -1,20 +1,23 @@
 {
   "folders_to_clean": ["examples", "icons","data"],
   "files": [
-    { "path": "examples/apps.py",		"folder": "examples"},
-    { "path": "examples/icon-apps.jpg",	"folder": "examples"},    
+    { "path": "examples/apps.py",		    "folder": "examples"},
+    { "path": "examples/icon-apps.jpg",	    "folder": "examples"},    
     { "path": "examples/weather.py",		"folder": "examples"},
     { "path": "examples/icon-weather.jpg",	"folder": "examples"},
     { "path": "examples/space.py",			"folder": "examples"},
     { "path": "examples/icon-space.jpg",   	"folder": "examples"},
     { "path": "examples/power.py",		    "folder": "examples"},
     { "path": "examples/icon-power.jpg",    "folder": "examples"},
+    { "path": "examples/logger.jpg",   		"folder": "examples"},
+    { "path": "examples/icon-logger.jpg",   "folder": "examples"},
     { "path": "data/data.csv",		    	"folder": "data"},
     { "path": "data/data2.csv",		    	"folder": "data"},
+    { "path": "lib/ahtx0.py",		    	"folder": "lib"},
     { "path": "icons/icon-sun.jpg",		    "folder": "icons"},
     { "path": "icons/icon-snow.jpg",	    "folder": "icons"},
     { "path": "icons/icon-storm.jpg",       "folder": "icons"},
-    { "path": "icons/icon-rain.jpg",       "folder": "icons"},
+    { "path": "icons/icon-rain.jpg",        "folder": "icons"},
     { "path": "icons/icon-cloud.jpg",       "folder": "icons"}
   ]
 }
