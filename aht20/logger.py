@@ -21,7 +21,7 @@ def clear():
     display.rectangle(0, 0, WIDTH, 10)
     display.rectangle(0, HEIGHT-10, WIDTH, HEIGHT-10)
     display.set_pen(15)
-    display.text("Badger App provisioning", 10, 1, WIDTH, 0.6)
+    display.text("Temp/Humidity Logger", 10, 1, WIDTH, 0.6)
     display.set_pen(0)
 
 def get_iso_timestamp():
@@ -38,6 +38,9 @@ chart_width = 200
 chart_height = 80  # Fixed chart height of 80 pixels
 chart_origin_x = int(0.5 * (WIDTH - chart_width))
 chart_origin_y = int(0.5 * (HEIGHT - chart_height))
+# Define the legend area
+legend_origin_x = chart_origin_x + chart_width + 20  # 20 pixels padding from the right end of the chart
+legend_origin_y = chart_origin_y
 
 
 # Check if the directory exists, and create it if it doesn't
@@ -60,7 +63,7 @@ csv_file_path = "data/logged_data.csv"
 temperature_values = []
 humidity_values = []
 
-y_scale = 40  # Initial y-axis scale (0 to 80)
+y_scale = 100  # Initial y-axis scale (0 to 80)
 measurement_count = 0
 
 try:
@@ -91,6 +94,8 @@ try:
 
         # Check button UP state
         if display.pressed(badger2040.BUTTON_UP):
+            if y_scale == 100:
+                y_scale = 80
             if y_scale == 80:
                 y_scale = 60
             elif y_scale == 60:
@@ -117,9 +122,18 @@ try:
             display.line(chart_origin_x - 3, tick_y, chart_origin_x + 3, tick_y)
             display.text("{}".format(i), chart_origin_x - 25, tick_y - 4, WIDTH, 0.5)
                 
-        # Draw axis labels
-        display.text("Time", chart_origin_x + chart_width - 25, chart_origin_y + chart_height + 10, WIDTH, 0.5)
-        #display.text("Temp", chart_origin_x - 20, chart_origin_y - 5, WIDTH, 0.5)
+        # Draw the legend
+        # For temperature
+        display.set_pen(0)  # Black for temperature
+        display.line(legend_origin_x-5, legend_origin_y, legend_origin_x +15, legend_origin_y, 2)
+        display.text("Temp", legend_origin_x - 5, legend_origin_y + 5, WIDTH, 0.5)
+
+        # For humidity
+        display.set_pen(10)  # Blue for humidity
+        display.line(legend_origin_x-5, legend_origin_y + 25, legend_origin_x + 15, legend_origin_y + 25, 2)
+        display.set_pen(0)  # Blue for humidity
+        display.text("RH %", legend_origin_x - 5, legend_origin_y + 30, WIDTH, 0.5)
+
 
         # Draw the temperature data as lines
         for i in range(1, len(temperature_values)):
@@ -149,11 +163,13 @@ try:
             average_humidity = sum(humidity_values) / len(humidity_values)
 
             display.set_pen(15)  # Pen color 0 is black
-            display.text("Avg: {:.2f}°C".format(average_temp), 150, HEIGHT-9, WIDTH, 0.6)
-            display.text("Current: {:.2f}°C".format(temperature), 150, 1, WIDTH, 0.6)  # Print current temperature
-            display.text("| Avg: {:.2f}%RH".format(average_humidity), 240, HEIGHT-9, WIDTH, 0.6)
-            display.text("Current: {:.2f}%RH".format(humidity), 240, 1, WIDTH, 0.6)
-            print(f"Average temperature: {average_temp} | Current temperature: {temperature}")
+            # Display average temperature & humidity
+            display.text("Avg: {:.2f}°C".format(average_temp), 195, HEIGHT-9, WIDTH, 0.6)
+            display.text("| {:.2f}%RH".format(average_humidity), 250, HEIGHT-9, WIDTH, 0.6)
+            # Display current temperature & humidity
+            display.text("Current: {:.2f}°C".format(temperature), 175, 1, WIDTH, 0.6)  # Print current temperature
+            display.text("| {:.2f}%RH".format(humidity), 250, 1, WIDTH, 0.6)
+            print(f"Average temperature: {average_temp} | Current temperature: {temperature} | Humidity {humidity}")
 
         display.update()
 
@@ -163,7 +179,7 @@ try:
             measurement_count = 0
 
         # Sleep for a while before the next observation
-        utime.sleep(10)  # Adjust the sleep duration as needed
+        utime.sleep(2)  # Adjust the sleep duration as needed
 
 except KeyboardInterrupt:
     pass
