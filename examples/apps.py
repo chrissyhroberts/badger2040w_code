@@ -150,8 +150,10 @@ for index, file_info in enumerate(files_to_keep, start=1):
 clear()
 display.text(f"Provisioning complete", 10, 15, WIDTH, 1)
 display.text(f"Press a + c to exit to badger OS", 10, 25, WIDTH, 1)
-
 display.update()
+print"quitting system, returning to launcher"
+sys.exit()
+
 ##########################################################################################
 ##########################################################################################
 # END

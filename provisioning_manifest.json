@@ -11,8 +11,6 @@
     { "path": "examples/icon-space.jpg",   	"folder": "examples"},
     { "path": "examples/power.py",		    "folder": "examples"},
     { "path": "examples/icon-power.jpg",    "folder": "examples"},
-    { "path": "examples/cl_set.py",		"folder": "examples"},
-    { "path": "examples/icon-cl_set.jpg",    "folder": "examples"},
     { "path": "data/data.csv",		    	"folder": "data"},
     { "path": "data/data2.csv",		    	"folder": "data"},
     { "path": "lib/ahtx0.py",		    	"folder": "lib"},
