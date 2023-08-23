@@ -231,7 +231,7 @@ print (uv_index)
 # Call halt in a loop, on battery this switches off power.
 # On USB, the app will exit when A+C is pressed because the launcher picks that up.
 while True:
-    badger2040.sleep_for(30)
+    badger2040.sleep_for(60)
     get_data()
     get_data_airquality()
     draw_page()
