@@ -1,15 +1,21 @@
 import utime
 import time
 from machine import Pin, I2C
+import machine
 import ahtx0
 import badger2040
 from badger2040 import WIDTH, HEIGHT
 import os
+from pcf85063a import PCF85063A
+
 # Display Setup
 display = badger2040.Badger2040()
 display.set_update_speed(2)
 display.set_thickness(4)
 
+# Create PCF85063A RTC instance
+i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))
+rtc_pcf85063a = PCF85063A(i2c)
 ####################################################################################
 # Define a function that clears the screen and prints a header row
 ####################################################################################
@@ -32,11 +38,40 @@ def clear():
 ####################################################################################
 
 def get_iso_timestamp():
-    now = utime.localtime()
+    now = rtc_pcf85063a.datetime()
     iso_timestamp = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}".format(
         now[0], now[1], now[2], now[3], now[4], now[5]
     )
+    print(iso_timestamp)
+
     return iso_timestamp
+
+####################################################################################
+# Define a function that rwads the tail of the log file
+####################################################################################
+
+def read_last_n_entries_from_csv(n=200):
+    """
+    Reads the last n entries from the CSV file
+    Returns two lists: temperature_values, humidity_values
+    """
+    temperatures = []
+    humidities = []
+
+    try:
+        with open(csv_file_path, "r") as csv_file:
+            lines = csv_file.readlines()
+            
+            # Get the last n lines
+            for line in lines[-n:]:
+                _, temperature, humidity = line.strip().split(',')
+                temperatures.append(float(temperature))
+                humidities.append(float(humidity))
+
+    except FileNotFoundError:
+        pass  # File doesn't exist yet, that's okay
+
+    return temperatures, humidities
 
 
 ####################################################################################
@@ -92,6 +127,12 @@ measurement_count = 0
 ####################################################################################
 # Main 
 ####################################################################################
+# Create PCF85063A RTC instance
+i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))
+rtc_pcf85063a = PCF85063A(i2c)
+print(f"PCF_RTC: {rtc_pcf85063a.datetime()}")
+
+
 
 try:
     while True:
@@ -101,6 +142,7 @@ try:
 
         # Create the sensor object using I2C
         sensor = ahtx0.AHT20(i2c)
+        #utime.sleep(2) 
         # Read temperature from the sensor
         temperature = sensor.temperature
         # Read relative humidity from the sensor
@@ -112,6 +154,8 @@ try:
         # Append the measurement to the CSV file
         with open(csv_file_path, "a") as csv_file:
             csv_file.write("{}, {:.2f}, {:.2f}\n".format(timestamp, temperature, humidity))
+            # Read the last 200 entries (or fewer if not yet 200)
+            temperature_values, humidity_values = read_last_n_entries_from_csv()
 
         # Store the temperature and humidity value
         temperature_values.append(temperature)
@@ -215,7 +259,8 @@ try:
 
 
         # Sleep for a while before the next observation
-        badger2040.sleep_for(1)
+        #badger2040.sleep_for(1)
+        utime.sleep(5)
 
 except KeyboardInterrupt:
     pass
