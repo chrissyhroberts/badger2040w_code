@@ -151,6 +151,11 @@ clear()
 display.text(f"Provisioning complete", 10, 15, WIDTH, 1)
 display.text(f"Press a + c to exit to badger OS", 10, 25, WIDTH, 1)
 display.update()
+
+while True:
+    display.keepalive()
+    display.halt()
+    
 ##########################################################################################
 ##########################################################################################
 # END
