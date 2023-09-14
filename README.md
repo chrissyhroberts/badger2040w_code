@@ -138,6 +138,17 @@ This is an updated version of the example weather app for the Badger2040W. I fid
 
 ![/img/weather.png](/img/weather.png)
 
+## TOTP Authenticator [examples/totp.py](examples/totp.py) and [examples/icon-totp.jpg](examples/icon-totp.jpg)
+
+This app provides the functionality of a TOTP authenticator. It is tested against Google Authenticator and creates identical codes, on the same time step. 
+When launched, the app connects to the web and synchronises the system clock via `ntptime` server. Currently unclear if it automatically handles timezones. I think so but will check after October 31^st^
+To add you keys, you need to get the secret keys from your service provider and add them to the [data/totp_keys.json](data/totp_keys.json) file.
+You should be able to add 30 keys to the same screen. Best to have this plugged in, as battery will drain faster with 30s updates.
+
+![/img/authenticator.png](/img/authenticator.jpeg)
+
+
+
 ## [3D Printable Badger2040 / Badger2040W case](3d_print_case)
 
 This is an openscad model and STL file for a really simple backplate for the badger2040W. You can screw your badger on to this with some small screws. It has a space for the USB socket and also ample room in the back for a li-on battery pack. I used a 1200 mAh PKCELL from Pimoroni. 
