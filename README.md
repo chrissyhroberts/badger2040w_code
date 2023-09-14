@@ -145,9 +145,9 @@ When launched, the app connects to the web and synchronises the system clock via
 To add you keys, you need to get the secret keys from your service provider and add them to the [data/totp_keys.json](data/totp_keys.json) file.
 You should be able to add 30 keys to the same screen. Best to have this plugged in, as battery will drain faster with 30s updates.
 
-![/img/authenticator.png](/img/authenticator.jpeg)
+![/img/authenticator.png](/img/authenticator.jpg)
 
-
+A lot of the code comes from this project by Edd Mann [https://github.com/eddmann/pico-2fa-totp](https://github.com/eddmann/pico-2fa-totp)
 
 ## [3D Printable Badger2040 / Badger2040W case](3d_print_case)
 
