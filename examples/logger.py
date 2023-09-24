@@ -97,11 +97,11 @@ except OSError as e:
         raise  # Raise the exception for other errors
 
     
+
 ####################################################################################   
 # Define the path to the CSV file
 ####################################################################################
 csv_file_path = "data/logged_data.csv"
-
 
 
 ####################################################################################
@@ -245,6 +245,7 @@ try:
             display.text("Current: {:.2f}°C".format(temperature), 175, 1, WIDTH, 0.6)  # Print current temperature
             display.text("| {:.2f}%RH".format(humidity), 250, 1, WIDTH, 0.6)
             print(f"Average temperature: {average_temp} | Current temperature: {temperature} | Humidity {humidity}")
+            display.text(get_iso_timestamp(), 10, HEIGHT-9, WIDTH, 0.6)
 
         # Update the display on Badger
         display.update()
@@ -260,9 +261,10 @@ try:
 
         # Sleep for a while before the next observation
         #badger2040.sleep_for(1)
-        utime.sleep(5)
+        utime.sleep(60)
 
 except KeyboardInterrupt:
     pass
+
 
 
