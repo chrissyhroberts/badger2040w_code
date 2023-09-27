@@ -1,4 +1,5 @@
 import time
+import machine
 import utime
 import ntptime
 import struct
