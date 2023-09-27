@@ -1,16 +1,17 @@
 import time
+import utime
 import ntptime
 import struct
 import badger2040
 import badger_os
 import ujson as json
+from pcf85063a import PCF85063A
+
 
 badger = badger2040.Badger2040()
-
 badger.connect()
 badger.set_font("bitmap16")
-
-badger.set_update_speed(1)
+badger.set_update_speed(2)
 
 # Set display parameters
 WIDTH = badger2040.WIDTH
@@ -22,6 +23,22 @@ if badger.isconnected():
 
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
+
+# Set the time on the external PCF85063A RTC
+print("setting pcf time")
+
+now = utime.localtime()
+i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))
+rtc_pcf85063a = PCF85063A(i2c)
+rtc_pcf85063a.datetime(now)
+    
+# Set the time on the external PCF85063A RTC
+print("pcf time set")
+
+
+#####################################################
+# Define functions
+#####################################################
 
 def left_rotate(n, b):
     return ((n << b) | (n >> (32 - b))) & 0xFFFFFFFF
@@ -133,7 +150,10 @@ def totp(time, key, step_secs=30, digits=6):
         step_secs - time % step_secs
     )
 
+#####################################################
 # Load keys from the JSON file
+#####################################################
+
 with open('data/totp_keys.json', 'r') as json_file:
     keys = json.load(json_file)
 
@@ -142,12 +162,42 @@ key_info = []
 x = 10  # Initial x position
 y = 20  # Initial y position
 
-current_time = time.time()  # Current Unix timestamp
+#####################################################
+# Get and check current times
+#####################################################
+
+def get_pcf_time():
+    current_time = time.time() 
+    current_time_pcf = machine.RTC().datetime()
+    print("current time system:", current_time)
+    print("current time pcf:", current_time_pcf)
+
+    # Extract the components from the tuple
+    year, month, day, weekday, hour, minute, second, yearday = current_time_pcf
+
+    # Convert the extracted components to integers
+    year = int(year)
+    month = int(month)
+    day = int(day)
+    hour = int(hour)
+    minute = int(minute)
+    second = int(second)
+
+    # Calculate the Unix timestamp using time.mktime
+    current_time_pcf = time.mktime((year, month, day, hour, minute, second, weekday, yearday))
+    
+    return current_time_pcf
+
+print(f"current time standard : {time.time()}")
+print(f"current time pfc : {get_pcf_time()}")
+print(f"time.time {time.time()}")
+
+
 
 for key in keys:
     name = key["name"]
     secret_key = key["key"]
-    otp_value, sec_remain = totp(current_time, secret_key,  30, 6)
+    otp_value, sec_remain = totp(get_pcf_time(), secret_key,  30, 6)
     
     key_info.append(f"{otp_value} : {name}")
 
@@ -177,20 +227,20 @@ badger.update()
 
 while True:
     badger.keepalive()
-    current_time = time.time()  # Current Unix timestamp
-    null,cadence = otp_value, remaining = totp(current_time, "LMESUJEY7PTJSNYO5LKSME5HWQO6XZ5L",  30, 6)
     
+    # Calculate the current OTP value and remaining time until next refresh
+    null, cadence = otp_value, remaining = totp(get_pcf_time(), "LMESUJEY7PTJSNYO5LKSME5HWQO6XZ5L", 30, 6)
+
     if cadence == 30:
+        # If the cadence timer is zero or negative, it's time to refresh
         key_info = []
         x = 10  # Initial x position
         y = 20  # Initial y position
 
-        current_time = time.time()  # Current Unix timestamp
-
         for key in keys:
             name = key["name"]
             secret_key = key["key"]
-            otp_value, remaining = totp(current_time, secret_key,  30, 6)
+            otp_value, remaining = totp(get_pcf_time(), secret_key, 30, 6)
             key_info.append(f"{otp_value} : {name}")
             sec_remain = max(sec_remain, remaining)
 
@@ -204,6 +254,7 @@ while True:
         badger.rectangle(0, 10, WIDTH, HEIGHT)
         badger.text("Badger TOTP Authenticator", 10, 1, WIDTH, 0.6)
         badger.text(f"Time to refresh : {sec_remain} S", 180, 1, WIDTH, 0.6)
+        print(f"Time to refresh : {sec_remain} S")
         badger.set_pen(15)
 
         for info in key_info:
@@ -216,8 +267,14 @@ while True:
                 x += 100  # Add 80 to x
 
         badger.update()
-#    print(cadence)
-    # Perform autoupdate logic
+        utime.sleep_ms(25000)
+        null, cadence = otp_value, remaining = totp(get_pcf_time(), "LMESUJEY7PTJSNYO5LKSME5HWQO6XZ5L", 30, 6)
+    # Put the microcontroller into deep sleep during cadence countdown
+    # Sleep for 30 seconds (cadence duration)
     if cadence > 0:
         cadence -= 1
+  # Sleep in milliseconds
+
+
+
 
