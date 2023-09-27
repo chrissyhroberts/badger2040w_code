@@ -6,7 +6,9 @@ import struct
 import badger2040
 import badger_os
 import ujson as json
+import network
 from pcf85063a import PCF85063A
+
 
 
 badger = badger2040.Badger2040()
@@ -20,7 +22,17 @@ HEIGHT = badger2040.HEIGHT
 
 if badger.isconnected():
     # Synchronize with the NTP server to get the current time
+    print("Connected to Wi-Fi, setting time on RTC")
     ntptime.settime()
+    print ("Disconnecting")
+    wlan = network.WLAN()
+    wlan.disconnect()
+    print("Disconnected from Wi-Fi")    
+else:
+    print("No Wi-Fi")    
+    
+
+
 
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
@@ -275,7 +287,6 @@ while True:
     if cadence > 0:
         cadence -= 1
   # Sleep in milliseconds
-
 
 
 
