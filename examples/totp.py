@@ -31,8 +31,8 @@ if badger.isconnected():
 else:
     print("No Wi-Fi")    
     
-
-
+#set timezone offset
+timezone_offset = 1
 
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
@@ -236,6 +236,12 @@ for info in key_info:
         y = 20  # Reset y to its original value
         x += 100  # Add 80 to x
 
+#show current date and time
+spot_time = machine.RTC().datetime()
+hour = spot_time[4]
+hour = hour + timezone_offset
+badger.text(f"{spot_time[0]}-{spot_time[1]}-{spot_time[2]}", 200, 70, WIDTH, 2)
+badger.text(f"{hour}:{spot_time[5]}", 200, 90, WIDTH, 3)
 badger.update()
 
 while True:
@@ -278,7 +284,13 @@ while True:
             if y >= HEIGHT - 15:
                 y = 20  # Reset y to its original value
                 x += 100  # Add 80 to x
-
+        #show current date and time
+        #show current date and time
+        spot_time = machine.RTC().datetime()
+        hour = spot_time[4]
+        hour = hour + timezone_offset
+        badger.text(f"{spot_time[0]}-{spot_time[1]}-{spot_time[2]}", 200, 70, WIDTH, 2)
+        badger.text(f"{hour}:{spot_time[5]}", 200, 90, WIDTH, 3)
         badger.update()
         utime.sleep_ms(25000)
         null, cadence = otp_value, remaining = totp(get_pcf_time(), "LMESUJEY7PTJSNYO5LKSME5HWQO6XZ5L", 30, 6)
