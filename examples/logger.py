@@ -68,7 +68,7 @@ def read_last_n_entries_from_csv(n=200):
             while len(lines) < n:
                 try:
                     csv_file.seek(-4096, 1)  # Move back 1024 bytes (adjust buffer size as needed)
-                    chunk = csv_file.read(1024)
+                    chunk = csv_file.read(4096)
                     lines = chunk.splitlines() + lines
                     if csv_file.tell() == 0:
                         break  # Reached the beginning of the file
@@ -83,12 +83,17 @@ def read_last_n_entries_from_csv(n=200):
                 # Split the line into parts
                 parts = line.strip().split(',')
                 if len(parts) >= 3:
-                    _, temperature, humidity = parts
-                    temperatures.append(float(temperature))
-                    humidities.append(float(humidity))
+                    try:
+                        _, temperature, humidity = parts
+                        temperatures.append(float(temperature))
+                        humidities.append(float(humidity))
+                    except ValueError:
+                        # Handle the case where the values cannot be converted to float
+                        # You can skip the line or apply custom error handling logic as needed
+                        pass
                 else:
                     # Handle the case where the line does not contain enough values
-                    # You can choose to skip this line or handle it differently
+                    # You can skip the line or apply custom error handling logic as needed
                     pass
 
     except OSError as e:
@@ -98,7 +103,6 @@ def read_last_n_entries_from_csv(n=200):
             raise  # Raise the exception for other errors
 
     return temperatures, humidities
-
 
 
 ####################################################################################
@@ -288,7 +292,7 @@ try:
 
         # Sleep for a while before the next observation
         #badger2040.sleep_for(1)
-        utime.sleep(2)
+        utime.sleep(360)
 
 except KeyboardInterrupt:
     pass
