@@ -50,58 +50,6 @@ def get_iso_timestamp():
 # Define a function that rwads the tail of the log file
 ####################################################################################
 
-import utime
-import time
-from machine import Pin, I2C
-import machine
-import ahtx0
-import badger2040
-from badger2040 import WIDTH, HEIGHT
-import os
-from pcf85063a import PCF85063A
-
-# Display Setup
-display = badger2040.Badger2040()
-display.set_update_speed(2)
-display.set_thickness(4)
-
-# Create PCF85063A RTC instance
-i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))
-rtc_pcf85063a = PCF85063A(i2c)
-####################################################################################
-# Define a function that clears the screen and prints a header row
-####################################################################################
-
-def clear():
-    display.set_pen(15)
-    display.clear()
-    display.set_pen(0)
-    display.set_font("bitmap8")
-    display.set_pen(0)
-    display.rectangle(0, 0, WIDTH, 10)
-    display.rectangle(0, HEIGHT-10, WIDTH, HEIGHT-10)
-    display.set_pen(15)
-    display.text("Temp/Humidity Logger", 10, 1, WIDTH, 0.6)
-    display.set_pen(0)
-
-
-####################################################################################
-# Define a function that gets an iso timestamp
-####################################################################################
-
-def get_iso_timestamp():
-    now = rtc_pcf85063a.datetime()
-    iso_timestamp = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}".format(
-        now[0], now[1], now[2], now[3], now[4], now[5]
-    )
-    print(iso_timestamp)
-
-    return iso_timestamp
-
-####################################################################################
-# Define a function that rwads the tail of the log file
-####################################################################################
-
 def read_last_n_entries_from_csv(n=200):
     """
     Reads the last n entries from the CSV file
@@ -344,4 +292,3 @@ try:
 
 except KeyboardInterrupt:
     pass
-
