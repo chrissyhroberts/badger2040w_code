@@ -112,22 +112,44 @@ def read_last_n_entries_from_csv(n=200):
 
     try:
         with open(csv_file_path, "r") as csv_file:
-            lines = csv_file.readlines()
+            # Move the file pointer to the end of the file
+            csv_file.seek(0, 2)  # Seek to the end (offset 2)
+            
+            # Read lines in reverse order
+            lines = []
+            while len(lines) < n:
+                try:
+                    csv_file.seek(-4096, 1)  # Move back 1024 bytes (adjust buffer size as needed)
+                    chunk = csv_file.read(1024)
+                    lines = chunk.splitlines() + lines
+                    if csv_file.tell() == 0:
+                        break  # Reached the beginning of the file
+                except OSError:
+                    # Handle file read error
+                    break
             
             # Get the last n lines
-            for line in lines[-n:]:
-                _, temperature, humidity = line.strip().split(',')
-                temperatures.append(float(temperature))
-                humidities.append(float(humidity))
+            lines = lines[-n:]
+            
+            for line in lines:
+                # Split the line into parts
+                parts = line.strip().split(',')
+                if len(parts) >= 3:
+                    _, temperature, humidity = parts
+                    temperatures.append(float(temperature))
+                    humidities.append(float(humidity))
+                else:
+                    # Handle the case where the line does not contain enough values
+                    # You can choose to skip this line or handle it differently
+                    pass
 
-    except FileNotFoundError:
-        pass  # File doesn't exist yet, that's okay
+    except OSError as e:
+        if e.args[0] == 2:  # errno.ENOENT - File not found
+            pass  # File doesn't exist yet, that's okay
+        else:
+            raise  # Raise the exception for other errors
 
     return temperatures, humidities
-
-
-
-
 
 
 
@@ -322,8 +344,4 @@ try:
 
 except KeyboardInterrupt:
     pass
-
-
-
-
 
