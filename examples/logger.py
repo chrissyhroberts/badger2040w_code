@@ -46,6 +46,14 @@ def get_iso_timestamp():
 
     return iso_timestamp
 
+
+####################################################################################
+# Define a function to round temperature and humidity values
+####################################################################################
+
+def round_temperature_and_humidity(temperature, humidity):
+    return round(temperature, 2), round(humidity, 2)
+
 ####################################################################################
 # Define a function that rwads the tail of the log file
 ####################################################################################
@@ -53,10 +61,11 @@ def get_iso_timestamp():
 def read_last_n_entries_from_csv(n=200):
     """
     Reads the last n entries from the CSV file
-    Returns two lists: temperature_values, humidity_values
+    Returns two lists: timestamp_values, temperature_values, humidity_values
     """
-    temperatures = []
-    humidities = []
+    timestamp_values = []
+    temperature_values = []
+    humidity_values = []
 
     try:
         with open(csv_file_path, "r") as csv_file:
@@ -67,8 +76,8 @@ def read_last_n_entries_from_csv(n=200):
             lines = []
             while len(lines) < n:
                 try:
-                    csv_file.seek(-4096, 1)  # Move back 1024 bytes (adjust buffer size as needed)
-                    chunk = csv_file.read(4096)
+                    csv_file.seek(-5800, 1)  # Move back 5800 bytes (adjust buffer size as needed, each line should be 29 bytes so here 200 * 29 = 5800 for 200 lines)
+                    chunk = csv_file.read(5800)
                     lines = chunk.splitlines() + lines
                     if csv_file.tell() == 0:
                         break  # Reached the beginning of the file
@@ -82,19 +91,15 @@ def read_last_n_entries_from_csv(n=200):
             for line in lines:
                 # Split the line into parts
                 parts = line.strip().split(',')
-                if len(parts) >= 3:
+                if len(parts) == 3:
+                    timestamp, temperature, humidity = parts
                     try:
-                        _, temperature, humidity = parts
-                        temperatures.append(float(temperature))
-                        humidities.append(float(humidity))
+                        timestamp_values.append(timestamp)
+                        temperature_values.append(float(temperature))
+                        humidity_values.append(float(humidity))
                     except ValueError:
-                        # Handle the case where the values cannot be converted to float
-                        # You can skip the line or apply custom error handling logic as needed
-                        pass
-                else:
-                    # Handle the case where the line does not contain enough values
-                    # You can skip the line or apply custom error handling logic as needed
-                    pass
+                        # Skip lines with invalid temperature or humidity values
+                        continue
 
     except OSError as e:
         if e.args[0] == 2:  # errno.ENOENT - File not found
@@ -102,7 +107,8 @@ def read_last_n_entries_from_csv(n=200):
         else:
             raise  # Raise the exception for other errors
 
-    return temperatures, humidities
+    return timestamp_values, temperature_values, humidity_values
+
 
 
 ####################################################################################
@@ -174,6 +180,7 @@ try:
         # Create the sensor object using I2C
         sensor = ahtx0.AHT20(i2c)
         #utime.sleep(2) 
+
         # Read temperature from the sensor
         temperature = sensor.temperature
         # Read relative humidity from the sensor
@@ -186,13 +193,17 @@ try:
         with open(csv_file_path, "a") as csv_file:
             csv_file.write("{}, {:.2f}, {:.2f}\n".format(timestamp, temperature, humidity))
             # Read the last 200 entries (or fewer if not yet 200)
-            temperature_values, humidity_values = read_last_n_entries_from_csv()
+            timeofreading, temperature_values, humidity_values = read_last_n_entries_from_csv()
+            
+        # Round temperature and humidity values
+        temperature, humidity = round_temperature_and_humidity(temperature, humidity)
 
         # Store the temperature and humidity value
         temperature_values.append(temperature)
         humidity_values.append(humidity)
-		
-		# increment the number of measurements held in memory
+        print(temperature_values.append(temperature))
+
+        # increment the number of measurements held in memory
         measurement_count += 1
 
         # Check button UP state
@@ -292,7 +303,7 @@ try:
 
         # Sleep for a while before the next observation
         #badger2040.sleep_for(1)
-        utime.sleep(360)
+        utime.sleep(2)
 
 except KeyboardInterrupt:
     pass
