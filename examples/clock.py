@@ -132,7 +132,8 @@ def draw_clock():
     display.set_pen(15)
     display.clear()
     display.set_pen(0)
-
+    display.set_font("serif")
+    display.set_thickness(2)
     display.text(hms, hms_offset, 40, 0, 1.8)
     display.text(ymd, ymd_offset, 100, 0, 1.0)
 

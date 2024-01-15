@@ -32,7 +32,7 @@ else:
     print("No Wi-Fi")    
     
 #set timezone offset
-timezone_offset = 1
+timezone_offset = 0
 
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
@@ -253,6 +253,9 @@ badger.text(f"{year}-{month}-{day}", 200, 70, WIDTH, 2)
 badger.text(f"{hour}:{minute}", 200, 90, WIDTH, 3)
 badger.update()
 
+#set variable for inversion of colours, aimed at stopping screen burn
+invert_colors = False
+
 while True:
     badger.keepalive()
     
@@ -261,6 +264,8 @@ while True:
 
     if cadence == 30:
         # If the cadence timer is zero or negative, it's time to refresh
+        invert_colors = not invert_colors  # Toggle the color state
+
         key_info = []
         x = 10  # Initial x position
         y = 20  # Initial y position
@@ -271,19 +276,21 @@ while True:
             otp_value, remaining = totp(get_pcf_time(), secret_key, 30, 6)
             key_info.append(f"{otp_value} : {name}")
             sec_remain = max(sec_remain, remaining)
+        pen_color = 0 if invert_colors else 15
+        pen_color_2 = 15 if invert_colors else 0
 
-        badger.set_pen(15)
+        badger.set_pen(pen_color)
         badger.clear()
         # Draw the page header
         badger.set_font("bitmap8")
-        badger.set_pen(15)
+        badger.set_pen(pen_color)
         badger.rectangle(0, 0, WIDTH, 10)
-        badger.set_pen(0)
+        badger.set_pen(pen_color_2)
         badger.rectangle(0, 10, WIDTH, HEIGHT)
         badger.text("Badger TOTP Authenticator", 10, 1, WIDTH, 0.6)
         badger.text(f"Time to refresh : {sec_remain} S", 180, 1, WIDTH, 0.6)
         print(f"Time to refresh : {sec_remain} S")
-        badger.set_pen(15)
+        badger.set_pen(pen_color)
 
         for info in key_info:
             badger.text(info, x, y, WIDTH, 0.6)
@@ -318,6 +325,7 @@ while True:
     if cadence > 0:
         cadence -= 1
   # Sleep in milliseconds
+
 
 
 
