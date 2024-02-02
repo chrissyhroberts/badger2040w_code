@@ -1,6 +1,9 @@
 # This example grabs current weather details from Open Meteo and displays them on Badger 2040 W.
 # Find out more about the Open Meteo API at https://open-meteo.com
-
+#
+#
+# V3.0 changes
+# Adds new method to prevent screenburn which inverts colours each time the screen refreshes
 import badger2040
 from badger2040 import WIDTH
 import urequests
@@ -10,12 +13,15 @@ import machine
 rtc = machine.RTC()
 
 # Set your latitude/longitude here (find yours by right clicking in Google Maps!)
-LAT = 52.104532 
-LNG = -0.022701
+LAT = 52.104
+LNG = -0.023
 TIMEZONE = "auto"  # determines time zone from lat/long
 
 URL = "https://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&daily=weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,winddirection_10m_dominant&timezone=" + TIMEZONE
 URL2 = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&hourly=pm10,pm2_5,uv_index,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen"
+
+# Define a global variable for color mode
+invert_colors = True  # Start with normal colors
 
 
 # Display Setup
@@ -107,18 +113,39 @@ def calculate_bearing(d):
 
 
 def draw_page():
-    # Clear the display
-    display.set_pen(15)
+    # Modify the draw_page function
+    global invert_colors  # Use the global variable
+    
+    # Set colors based on the invert_colors flag
+    if invert_colors:
+        background_color = 0  # Black
+        text_color = 15  # White
+        # Define the inverted icon file names
+        icon_snow = "/icons/icon-snow_dark.jpg"
+        icon_rain = "/icons/icon-rain_dark.jpg"
+        icon_cloud = "/icons/icon-cloud_dark.jpg"
+        icon_sun = "/icons/icon-sun_dark.jpg"
+        icon_storm = "/icons/icon-storm_dark.jpg"
+    else:
+        background_color = 15  # White
+        text_color = 0  # Black
+        # Define the normal icon file names
+        icon_snow = "/icons/icon-snow.jpg"
+        icon_rain = "/icons/icon-rain.jpg"
+        icon_cloud = "/icons/icon-cloud.jpg"
+        icon_sun = "/icons/icon-sun.jpg"
+        icon_storm = "/icons/icon-storm.jpg"
+    
+    # Clear the display with the background color
+    display.set_pen(background_color)
     display.clear()
-    display.set_pen(0)
-
-    # Draw the page header
-    display.set_font("bitmap8")
-    display.set_pen(0)
+    
+    # Use the text color for drawing text and other elements
+    display.set_pen(text_color)
     display.rectangle(0, 0, WIDTH, 10)
-    display.set_pen(15)
+    display.set_pen(background_color)
     display.text("Weather @ The Moving Castle", 10, 1, WIDTH, 0.6) # parameters are left padding, top padding, width of screen area, font size
-    display.set_pen(0)
+    display.set_pen(text_color)
 
     display.set_font("bitmap8")
 
@@ -127,26 +154,30 @@ def draw_page():
         # Weather codes from https://open-meteo.com/en/docs
         # Weather icons from https://fontawesome.com/
         if weathercode in [71, 73, 75, 77, 85, 86]:  # codes for snow
-            jpeg.open_file("/icons/icon-snow.jpg")
+            jpeg.open_file(icon_snow)
         elif weathercode in [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82]:  # codes for rain
-            jpeg.open_file("/icons/icon-rain.jpg")
+            jpeg.open_file(icon_rain)
         elif weathercode in [1, 2, 3, 45, 48]:  # codes for cloud
-            jpeg.open_file("/icons/icon-cloud.jpg")
+            jpeg.open_file(icon_cloud)
         elif weathercode in [0]:  # codes for sun
-            jpeg.open_file("/icons/icon-sun.jpg")
+            jpeg.open_file(icon_sun)
         elif weathercode in [95, 96, 99]:  # codes for storm
-            jpeg.open_file("/icons/icon-storm.jpg")
-        jpeg.decode(10,30, jpegdec.JPEG_SCALE_FULL)
+            jpeg.open_file(icon_storm)
+            
+        try:
+            jpeg.decode(10,30, jpegdec.JPEG_SCALE_FULL)
+        except Exception as e:
+            print("Error opening or decoding JPEG:", e)
 
         # show current temperature, with highs and lows
-        display.set_pen(0)
+        display.set_pen(text_color)
         display.text(f"{temperature}°C  ", 20, 95, WIDTH - 50, 2)
         display.text(f"{apparent_temperature_min[1]}°C, {apparent_temperature_max[1]}°C", 20, 115, WIDTH - 50, 1)
 
         # show prob and amount of rain today
-        jpeg.open_file("/icons/icon-rain.jpg")
+        jpeg.open_file(icon_rain)
         jpeg.decode(100,20, jpegdec.JPEG_SCALE_HALF)
-        display.set_pen(0)
+        display.set_pen(text_color)
         display.text(f"{precipitation_probability_max[1]}% ", 135, 25, WIDTH - 105, 2)
         display.text(f"{precipitation_sum[1]} mm ", 135, 45, WIDTH - 105, 1)
        
@@ -154,7 +185,7 @@ def draw_page():
         
 #        [{apparent_temperature_min[1]}°C, {apparent_temperature_max[1]}°C]
         # show five day high temperatures
-        display.set_pen(0)
+        display.set_pen(text_color)
 #        display.text(f"Forecast: {apparent_temperature_max[2]}°C | {apparent_temperature_max[3]}°C | {apparent_temperature_max[4]}°C | {apparent_temperature_max[5]}°C | {apparent_temperature_max[6]}°C", 10, 30, WIDTH - 50, 1)
         # show sunrise, sunset
         display.text(f"Wind : {windspeed} km/h {winddirection} | Prevailing : {winddirection_10m_dominant}", 100, 60, WIDTH - 105, 1.5)
@@ -164,37 +195,37 @@ def draw_page():
         print("Daily weathercodes")
         print(day_weathercode)
         if day_weathercode[2] in [71, 73, 75, 77, 85, 86]:  # codes for snow
-            jpeg.open_file("/icons/icon-snow.jpg")
+            jpeg.open_file(icon_snow)
         elif day_weathercode[2] in [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82]:  # codes for rain
-            jpeg.open_file("/icons/icon-rain.jpg")
+            jpeg.open_file(icon_rain)
         elif day_weathercode[2] in [1, 2, 3, 45, 48]:  # codes for cloud
-            jpeg.open_file("/icons/icon-cloud.jpg")
+            jpeg.open_file(icon_cloud)
         elif day_weathercode[2] in [0]:  # codes for sun
-            jpeg.open_file("/icons/icon-sun.jpg")
+            jpeg.open_file(icon_sun)
         elif day_weathercode[2] in [95, 96, 99]:  # codes for storm
-            jpeg.open_file("/icons/icon-storm.jpg")
-        display.set_pen(0)
+            jpeg.open_file(icon_storm)
+        display.set_pen(text_color)
         display.text("+1 Day", 160, 110, WIDTH - 105, 1.5)
         jpeg.decode(190,90, jpegdec.JPEG_SCALE_HALF)
 
 # Show day after tomorrow's weather
 
         if day_weathercode[3] in [71, 73, 75, 77, 85, 86]:  # codes for snow
-            jpeg.open_file("/icons/icon-snow.jpg")
+            jpeg.open_file(icon_snow)
         elif day_weathercode[3] in [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82]:  # codes for rain
-            jpeg.open_file("/icons/icon-rain.jpg")
+            jpeg.open_file(icon_rain)
         elif day_weathercode[3] in [1, 2, 3, 45, 48]:  # codes for cloud
-            jpeg.open_file("/icons/icon-cloud.jpg")
+            jpeg.open_file(icon_cloud)
         elif day_weathercode[3] in [0]:  # codes for sun
-            jpeg.open_file("/icons/icon-sun.jpg")
+            jpeg.open_file(icon_sun)
         elif day_weathercode[3] in [95, 96, 99]:  # codes for storm
-            jpeg.open_file("/icons/icon-storm.jpg")
-        display.set_pen(0)
+            jpeg.open_file(icon_storm)
+        display.set_pen(text_color)
         display.text("+2 Day", 230, 110, WIDTH - 105, 1.5)
         jpeg.decode(260,90, jpegdec.JPEG_SCALE_HALF)
 
 #        display.text(f"Wind Direction: {winddirection}", int(WIDTH / 3), 68, WIDTH - 105, 2)
-        display.set_pen(0)
+        display.set_pen(text_color)
         display.text(f"Updated {time}", 100, 90, WIDTH - 105, 1)
 #  display pollen counts & particulate
         display.text(f"PM10  : {pm10}", 170, 15, WIDTH - 105, 1.5)
@@ -211,9 +242,9 @@ def draw_page():
 # show UV index
         display.text(f"Max UV Index : {uv_index}", 100, 80, WIDTH - 105, 1)
     else:
-        display.set_pen(0)
+        display.set_pen(text_color)
         display.rectangle(0, 60, WIDTH, 25)
-        display.set_pen(15)
+        display.set_pen(background_color)
         display.text("Unable to display weather! Check your network settings in WIFI_CONFIG.py", 5, 65, WIDTH, 1)
 
     display.update()
@@ -231,7 +262,10 @@ print (uv_index)
 # Call halt in a loop, on battery this switches off power.
 # On USB, the app will exit when A+C is pressed because the launcher picks that up.
 while True:
-    badger2040.sleep_for(60)
+    badger2040.sleep_for(1)
     get_data()
     get_data_airquality()
+    invert_colors = not invert_colors  # Toggle the color mode for the next iteration
     draw_page()
+
+
