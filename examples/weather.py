@@ -238,7 +238,7 @@ def draw_page():
 
 # show date
 
-        display.text(f"{date}", 0, 15, WIDTH - 105, 2)
+        display.text(f"{date}", 1, 15, WIDTH - 105, 2)
 # show UV index
         display.text(f"Max UV Index : {uv_index}", 100, 80, WIDTH - 105, 1)
     else:
