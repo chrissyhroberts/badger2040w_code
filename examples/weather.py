@@ -242,7 +242,7 @@ display.connect()
 
 #get_data()
 #get_data_airquality()
-#draw_page(15, 0)
+#draw_page(0, 15)
 #print("UV")
 #print (uv_index)
 
@@ -254,21 +254,21 @@ while True:
     sleep_time = 60
     
     # do one cycle with dark mode colours
-    print("sleeping")
-    badger2040.sleep_for(sleep_time)  # Or whatever duration you need
     print("waking & printing dark mode")
     get_data()
     get_data_airquality()       
     draw_page(15, 0)
-
-    # do one cycle with light mode colours
     print("sleeping")
     badger2040.sleep_for(sleep_time)  # Or whatever duration you need
+
+    # do one cycle with light mode colours
+
     print("waking & printing light mode")
     get_data()
     get_data_airquality()       
     draw_page(0, 15)    
-
+    print("sleeping")
+    badger2040.sleep_for(sleep_time)  # Or whatever duration you need
 
 
 
