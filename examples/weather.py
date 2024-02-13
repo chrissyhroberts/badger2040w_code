@@ -14,15 +14,15 @@ rtc = machine.RTC()
 
 # Set your latitude/longitude here (find yours by right clicking in Google Maps!)
 LAT = 52.104
-LNG = -0.023
+LNG = -0.0227
 TIMEZONE = "auto"  # determines time zone from lat/long
 
 URL = "https://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&daily=weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,winddirection_10m_dominant&timezone=" + TIMEZONE
 URL2 = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&hourly=pm10,pm2_5,uv_index,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen"
 
-# Define a global variable for color mode
-invert_colors = True  # Start with normal colors
-
+# Define foreground and background variable for color mode
+fg = 15  # Start with normal colors
+bg = 0
 
 # Display Setup
 display = badger2040.Badger2040()
@@ -112,29 +112,16 @@ def calculate_bearing(d):
     return dirs[ix % len(dirs)]
 
 
-def draw_page():
-    # Modify the draw_page function
-    global invert_colors  # Use the global variable
+def draw_page(text_color, background_color):
     
-    # Set colors based on the invert_colors flag
-    if invert_colors:
-        background_color = 0  # Black
-        text_color = 15  # White
-        # Define the inverted icon file names
-        icon_snow = "/icons/icon-snow_dark.jpg"
-        icon_rain = "/icons/icon-rain_dark.jpg"
-        icon_cloud = "/icons/icon-cloud_dark.jpg"
-        icon_sun = "/icons/icon-sun_dark.jpg"
-        icon_storm = "/icons/icon-storm_dark.jpg"
-    else:
-        background_color = 15  # White
-        text_color = 0  # Black
-        # Define the normal icon file names
-        icon_snow = "/icons/icon-snow.jpg"
-        icon_rain = "/icons/icon-rain.jpg"
-        icon_cloud = "/icons/icon-cloud.jpg"
-        icon_sun = "/icons/icon-sun.jpg"
-        icon_storm = "/icons/icon-storm.jpg"
+    # Define the icon file names based on the text color for simplicity
+    # Assuming white text (15) uses dark icons and black text (0) uses light icons
+    icon_prefix = "_dark" if text_color == 15 else ""
+    icon_snow = f"/icons/icon-snow{icon_prefix}.jpg"
+    icon_rain = f"/icons/icon-rain{icon_prefix}.jpg"
+    icon_cloud = f"/icons/icon-cloud{icon_prefix}.jpg"
+    icon_sun = f"/icons/icon-sun{icon_prefix}.jpg"
+    icon_storm = f"/icons/icon-storm{icon_prefix}.jpg"
     
     # Clear the display with the background color
     display.set_pen(background_color)
@@ -253,19 +240,36 @@ def draw_page():
 print("connecting")
 display.connect()
 
-get_data()
-get_data_airquality()
-draw_page()
-print("UV")
-print (uv_index)
+#get_data()
+#get_data_airquality()
+#draw_page(15, 0)
+#print("UV")
+#print (uv_index)
 
 # Call halt in a loop, on battery this switches off power.
 # On USB, the app will exit when A+C is pressed because the launcher picks that up.
 while True:
-    badger2040.sleep_for(1)
+    
+    #Define the sleep interval between refreshes
+    sleep_time = 60
+    
+    # do one cycle with dark mode colours
+    print("sleeping")
+    badger2040.sleep_for(sleep_time)  # Or whatever duration you need
+    print("waking & printing dark mode")
     get_data()
-    get_data_airquality()
-    invert_colors = not invert_colors  # Toggle the color mode for the next iteration
-    draw_page()
+    get_data_airquality()       
+    draw_page(15, 0)
+
+    # do one cycle with light mode colours
+    print("sleeping")
+    badger2040.sleep_for(sleep_time)  # Or whatever duration you need
+    print("waking & printing light mode")
+    get_data()
+    get_data_airquality()       
+    draw_page(0, 15)    
+
+
+
 
 
