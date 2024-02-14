@@ -262,6 +262,7 @@ while True:
     badger2040.sleep_for(sleep_time)  # Or whatever duration you need
 
     # do one cycle with light mode colours
+    sleep_time = 60
 
     print("waking & printing light mode")
     get_data()
@@ -269,6 +270,8 @@ while True:
     draw_page(0, 15)    
     print("sleeping")
     badger2040.sleep_for(sleep_time)  # Or whatever duration you need
+
+
 
 
 
