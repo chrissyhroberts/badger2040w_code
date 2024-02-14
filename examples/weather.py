@@ -9,6 +9,7 @@ from badger2040 import WIDTH
 import urequests
 import jpegdec
 import machine
+import random
 
 rtc = machine.RTC()
 
@@ -250,27 +251,23 @@ display.connect()
 # On USB, the app will exit when A+C is pressed because the launcher picks that up.
 while True:
     
+    # Define dark mode and light mode
+    actions = [
+    lambda: draw_page(0, 15),
+    lambda: draw_page(15, 0)
+    ]
+
+# Randomly select and execute one of the functions
     #Define the sleep interval between refreshes
-    sleep_time = 60
+    sleep_time = 15
     
     # do one cycle with dark mode colours
     print("waking & printing dark mode")
     get_data()
     get_data_airquality()       
-    draw_page(15, 0)
+    random.choice(actions)()
     print("sleeping")
     badger2040.sleep_for(sleep_time)  # Or whatever duration you need
-
-    # do one cycle with light mode colours
-    sleep_time = 60
-
-    print("waking & printing light mode")
-    get_data()
-    get_data_airquality()       
-    draw_page(0, 15)    
-    print("sleeping")
-    badger2040.sleep_for(sleep_time)  # Or whatever duration you need
-
 
 
 
