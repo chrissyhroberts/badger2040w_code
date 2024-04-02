@@ -20,6 +20,11 @@
     { "path": "icons/icon-snow.jpg",	    "folder": "icons"},
     { "path": "icons/icon-storm.jpg",       "folder": "icons"},
     { "path": "icons/icon-rain.jpg",        "folder": "icons"},
-    { "path": "icons/icon-cloud.jpg",       "folder": "icons"}
+    { "path": "icons/icon-cloud.jpg",       "folder": "icons"},
+    { "path": "icons/icon-sun_dark.jpg",		    "folder": "icons"},
+    { "path": "icons/icon-snow_dark.jpg",	    "folder": "icons"},
+    { "path": "icons/icon-storm_dark.jpg",       "folder": "icons"},
+    { "path": "icons/icon-rain_dark.jpg",        "folder": "icons"},
+    { "path": "icons/icon-cloud_dark.jpg",       "folder": "icons"}
   ]
 }
