@@ -149,6 +149,10 @@ You should be able to add 30 keys to the same screen. Best to have this plugged 
 
 A lot of the code comes from this project by Edd Mann [https://github.com/eddmann/pico-2fa-totp](https://github.com/eddmann/pico-2fa-totp)
 
+## TOTP Authenticator 2 [examples/totp2.py](examples/totp2.py) and [examples/icon-totp2.jpg](examples/icon-totp2.jpg)
+
+The exact same thing as totp, except it only updates the screen when you press a button.
+
 ## [3D Printable Badger2040 / Badger2040W case](3d_print_case)
 
 This is an openscad model and STL file for a really simple backplate for the badger2040W. You can screw your badger on to this with some small screws. It has a space for the USB socket and also ample room in the back for a li-on battery pack. I used a 1200 mAh PKCELL from Pimoroni. 
