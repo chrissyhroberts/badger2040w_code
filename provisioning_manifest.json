@@ -13,9 +13,21 @@
     { "path": "examples/icon-power.jpg",    "folder": "examples"},
     { "path": "examples/totp.py",		    "folder": "examples"},
     { "path": "examples/icon-totp.jpg",     "folder": "examples"},
+    { "path": "examples/form.py",     "folder": "examples"},
+    { "path": "examples/icon-form.jpg",     "folder": "examples"},
+    { "path": "examples/sendODK.py",     "folder": "examples"},
+    { "path": "examples/icon-sendODK.jpg",     "folder": "examples"},
     { "path": "data/data.csv",		    	"folder": "data"},
     { "path": "data/totp_keys.json",    	"folder": "data"},
     { "path": "lib/ahtx0.py",		    	"folder": "lib"},
+    { "path": "icons/a.jpg",		    "folder": "icons"},
+    { "path": "icons/b.jpg",		    "folder": "icons"},
+    { "path": "icons/c.jpg",		    "folder": "icons"},
+    { "path": "icons/d.jpg",		    "folder": "icons"},
+    { "path": "icons/happy.jpg",		    "folder": "icons"},
+    { "path": "icons/joyful.jpg",		    "folder": "icons"},
+    { "path": "icons/neutral.jpg",		    "folder": "icons"},
+    { "path": "icons/sad.jpg",		    "folder": "icons"},
     { "path": "icons/icon-sun.jpg",		    "folder": "icons"},
     { "path": "icons/icon-snow.jpg",	    "folder": "icons"},
     { "path": "icons/icon-storm.jpg",       "folder": "icons"},
@@ -26,7 +38,7 @@
     { "path": "icons/icon-storm_dark.jpg",       "folder": "icons"},
     { "path": "icons/icon-rain_dark.jpg",        "folder": "icons"},
     { "path": "icons/icon-cloud_dark.jpg",       "folder": "icons"},
-    { "path": "icons/*.jpg",       "folder": "icons"}
+    { "path": "forms/Badger 2040 Test.odkbuild",       "folder": "forms"}
 
   ]
 }
