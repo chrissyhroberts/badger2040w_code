@@ -25,6 +25,8 @@
     { "path": "icons/icon-snow_dark.jpg",	    "folder": "icons"},
     { "path": "icons/icon-storm_dark.jpg",       "folder": "icons"},
     { "path": "icons/icon-rain_dark.jpg",        "folder": "icons"},
-    { "path": "icons/icon-cloud_dark.jpg",       "folder": "icons"}
+    { "path": "icons/icon-cloud_dark.jpg",       "folder": "icons"},
+    { "path": "icons/*.jpg",       "folder": "icons"}
+
   ]
 }
