@@ -33,6 +33,11 @@ else:
 # Set timezone offset
 timezone_offset = 1
 
+#set variable for inversion of colours, aimed at stopping screen burn
+invert_colors = False
+pen_color = 15
+pen_color_2 = 0
+
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
 
@@ -193,18 +198,18 @@ def display_otp():
         otp_value, sec_remain = totp(get_pcf_time(), secret_key, 30, 6)
         key_info.append(f"{otp_value} : {name}")
 
-    badger.set_pen(15)
+    badger.set_pen(pen_color)
     badger.clear()
     # Draw the page header
     badger.set_font("bitmap8")
-    badger.set_pen(15)
+    badger.set_pen(pen_color)
     badger.rectangle(0, 0, WIDTH, 10)
-    badger.set_pen(0)
+    badger.set_pen(pen_color_2)
     badger.rectangle(0, 10, WIDTH, HEIGHT)
     badger.text("Badger TOTP Authenticator", 10, 1, WIDTH, 0.6)
     badger.text(f"Time to refresh : {sec_remain} S", 180, 1, WIDTH, 0.6)
 
-    badger.set_pen(15)
+    badger.set_pen(pen_color)
 
     for info in key_info:
         badger.text(info, x, y, WIDTH, 0.6)
@@ -240,7 +245,13 @@ while True:
         utime.sleep_ms(50)  # Debounce delay
         if badger.pressed(badger2040.BUTTON_A):  # Check again if button is still pressed
             display_otp()
+            invert_colors = not invert_colors
+            pen_color = 0 if invert_colors else 15
+            pen_color_2 = 15 if invert_colors else 0# Toggle the color state
+
             while badger.pressed(badger2040.BUTTON_A):
                 utime.sleep_ms(10)  # Wait for the button to be released
     utime.sleep(0.1)  # Polling delay to reduce CPU usage
+
+
 
