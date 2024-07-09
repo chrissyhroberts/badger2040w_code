@@ -2,6 +2,8 @@
 
 This repo consolidates a bunch of code for the Pimoroni Badger2040 and Badger2040W
 
+NB : There's an issue with Mac version of Thonny which means it sometimes can't find the badger. Killing the internal library with `rm -rf ~/Library/Thonny` can fix this. 
+
 ## App provisioning [examples/apps.py](examples/apps.py) and [examples/icon-apps.jpg](examples/icon-apps.jpg) 
 
 Using Thonny to copy your code and apps on to the badger2040W can be a bit of a pain. This functionality allows a user to provision a list of apps to the device remotely. The main function here is that you can write an app and stick it in an 'examples' folder on a github repo or other source. The 'apps' app then consults a json file which maintains a list of the apps that you currently want on your badger2040W. It downloads the apps from your repo, then restarts the launcher to update the badgeros homepage.
