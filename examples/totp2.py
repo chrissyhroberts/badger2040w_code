@@ -37,7 +37,6 @@ timezone_offset = 1
 invert_colors = False
 pen_color = 15
 pen_color_2 = 0
-
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
 
