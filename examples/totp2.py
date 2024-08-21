@@ -1,3 +1,10 @@
+# v2.01
+# *After setting clock, the Wifi is disconnected AND the WLAN is shut down to save energy when running on battery.
+# *The polling loop now has a utime.sleep(5) to reduce the CPU usage and save battery. To actuate the refresh, hold button A for up to 5 seconds
+# 
+# v2.00
+# *Changes from automated refreshment of screen so that a putton push prompts update.
+
 import time
 import machine
 import utime
@@ -23,20 +30,23 @@ if badger.isconnected():
     # Synchronize with the NTP server to get the current time
     print("Connected to Wi-Fi, setting time on RTC")
     ntptime.settime()
-    print("Disconnecting")
-    wlan = network.WLAN()
+    
+    # Disconnect and power down Wi-Fi
+    wlan = network.WLAN(network.STA_IF)
     wlan.disconnect()
-    print("Disconnected from Wi-Fi")
+    wlan.active(False)
+    print("Disconnected and Wi-Fi powered down")
 else:
     print("No Wi-Fi")
 
 # Set timezone offset
 timezone_offset = 1
 
-#set variable for inversion of colours, aimed at stopping screen burn
+# Set variable for inversion of colours, aimed at stopping screen burn
 invert_colors = False
 pen_color = 15
 pen_color_2 = 0
+
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
 
@@ -246,11 +256,11 @@ while True:
             display_otp()
             invert_colors = not invert_colors
             pen_color = 0 if invert_colors else 15
-            pen_color_2 = 15 if invert_colors else 0# Toggle the color state
+            pen_color_2 = 15 if invert_colors else 0  # Toggle the color state
 
             while badger.pressed(badger2040.BUTTON_A):
                 utime.sleep_ms(10)  # Wait for the button to be released
-    utime.sleep(0.1)  # Polling delay to reduce CPU usage
 
-
+    # Reduce polling frequency to save power
+    utime.sleep(5)  # Increase the sleep time to reduce CPU usage
 
