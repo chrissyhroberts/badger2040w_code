@@ -117,6 +117,8 @@ This pulls together some code from the clock and TOTP apps to build a simple das
 
 There's built in colour switching between dark and light modes, which aims to minimise screen-burn, but my guess is that once you've used this dashboard for a while, you might well get ghosting thanks to the many refreshes you'll be doing. 
 
+You'll need the URL to your ics calendar in `data/calendar_url.txt` and the TOTP magic code in `data/totp_keys.json` as per the totp app below. 
+
 ![/img/dash.jpeg](/img/dash.jpeg)
 
 
