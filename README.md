@@ -119,6 +119,13 @@ There's built in colour switching between dark and light modes, which aims to mi
 
 You'll need the URL to your ics calendar in `data/calendar_url.txt` and the TOTP magic code in `data/totp_keys.json` as per the totp app below. 
 
+To do
+* Add weather
+* Add automatic on/off to map with working days
+* Prettify it
+* Handle issue where long event names wrap over multiple lines
+* 
+
 ![/img/dash.jpeg](/img/dash.jpeg)
 
 
