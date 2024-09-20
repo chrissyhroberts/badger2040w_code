@@ -111,6 +111,15 @@ print(rtc_pcf85063a.datetime())
 
 I’ve tested that this method works both for a li-on 3.7 V battery plugged in to the batt socket on the back, and also for a badger running on a USB cable connected to a mobile phone charger pack. The RTC keeps running on both, even though I had to push the button on the charger pack to start pushing buttons. It seems that the buttons on the badger can’t trigger the activation of the generic mobile charger, but the RTC can keep running.
 
+## Dashboard Calendar, TOTP and Clock [examples/dash.py](examples/dash.py)
+
+This pulls together some code from the clock and TOTP apps to build a simple dashboard. The main new feature here is the ability to read in a calendar .ics feed and to display current and next meetings, along with date, clock and current TOTP code. Refreshes every minute, so you might want to change to 30s if you want TOTPs showing correctly all the time. Pressing A will update TOTP, Pressing B updates both TOTP and Calendar events (it is consequentially slower to update) and button C puts the device to sleep or wakes it from sleep. 
+
+There's built in colour switching between dark and light modes, which aims to minimise screen-burn, but my guess is that once you've used this dashboard for a while, you might well get ghosting thanks to the many refreshes you'll be doing. 
+
+![/img/dash.jpeg](/img/dash.jpeg)
+
+
 ## Space Weather [examples/space.py](examples/space.py) and [examples/icon-space.jpg](examples/icon-space.jpg)
 
 The space app adds functions to display a variety of data that can be useful to HAM radio / Amateur radio enthusiasts. 
