@@ -10,7 +10,10 @@ import network
 from pcf85063a import PCF85063A
 import urequests
 from machine import RTC
+import pngdec
 
+
+#####
 
 ############################################################################################################
 # Initialize the Badger2040
@@ -22,6 +25,7 @@ badger.set_update_speed(2)
 # Set display parameters
 WIDTH = badger2040.WIDTH
 HEIGHT = badger2040.HEIGHT
+png = pngdec.PNG(badger.display)
 
 # Function to read the calendar URL from a file
 def read_calendar_url_from_file(file_path):
@@ -47,21 +51,92 @@ else:
 
 
 # Set timezone offset
-timezone_offset = 1
+timezone_offset = 0
 
-# Map common timezones to their respective offsets
 timezone_offsets = {
+    # North American Timezones
     "Eastern Standard Time": "-0500",  # EST (UTC-5)
     "Eastern Daylight Time": "-0400",  # EDT (UTC-4)
-    "British Summer Time": "+0100",    # BST (UTC+1)
+    "Central Standard Time": "-0600",  # CST (UTC-6)
+    "Central Daylight Time": "-0500",  # CDT (UTC-5)
+    "Mountain Standard Time": "-0700", # MST (UTC-7)
+    "Mountain Daylight Time": "-0600", # MDT (UTC-6)
+    "Pacific Standard Time": "-0800",  # PST (UTC-8)
+    "Pacific Daylight Time": "-0700",  # PDT (UTC-7)
+    "Alaskan Standard Time": "-0900",  # AKST (UTC-9)
+    "Hawaiian Standard Time": "-1000", # HST (UTC-10)
+
+    # European Timezones
     "Greenwich Mean Time": "+0000",    # GMT (UTC)
-    # Add more timezones as needed
+    "British Summer Time": "+0100",    # BST (UTC+1)
+    "Central European Time": "+0100",  # CET (UTC+1)
+    "Central European Summer Time": "+0200", # CEST (UTC+2)
+    "Eastern European Time": "+0200",  # EET (UTC+2)
+    "Eastern European Summer Time": "+0300", # EEST (UTC+3)
+    
+    # Russia and Former USSR Timezones
+    "Moscow Standard Time": "+0300",   # MSK (UTC+3)
+    "Samara Time": "+0400",            # SAMT (UTC+4)
+    "Yekaterinburg Time": "+0500",     # YEKT (UTC+5)
+    "Omsk Time": "+0600",              # OMST (UTC+6)
+    "Krasnoyarsk Time": "+0700",       # KRAT (UTC+7)
+    "Irkutsk Time": "+0800",           # IRKT (UTC+8)
+    "Yakutsk Time": "+0900",           # YAKT (UTC+9)
+    "Vladivostok Time": "+1000",       # VLAT (UTC+10)
+    "Magadan Time": "+1100",           # MAGT (UTC+11)
+
+    # Asia Timezones
+    "India Standard Time": "+0530",    # IST (UTC+5:30)
+    "China Standard Time": "+0800",    # CST (UTC+8)
+    "Japan Standard Time": "+0900",    # JST (UTC+9)
+    "Korea Standard Time": "+0900",    # KST (UTC+9)
+    "Singapore Standard Time": "+0800",# SGT (UTC+8)
+    "Hong Kong Standard Time": "+0800",# HKT (UTC+8)
+    "Indochina Time": "+0700",         # ICT (UTC+7)
+    "Western Indonesia Time": "+0700", # WIB (UTC+7)
+    "Central Indonesia Time": "+0800", # WITA (UTC+8)
+    "Eastern Indonesia Time": "+0900", # WIT (UTC+9)
+
+    # Australia Timezones
+    "Australian Eastern Standard Time": "+1000", # AEST (UTC+10)
+    "Australian Eastern Daylight Time": "+1100", # AEDT (UTC+11)
+    "Australian Central Standard Time": "+0930", # ACST (UTC+9:30)
+    "Australian Central Daylight Time": "+1030", # ACDT (UTC+10:30)
+    "Australian Western Standard Time": "+0800", # AWST (UTC+8)
+
+    # South America Timezones
+    "Brazil Standard Time": "-0300",   # BRT (UTC-3)
+    "Argentina Time": "-0300",         # ART (UTC-3)
+    "Chile Standard Time": "-0400",    # CLT (UTC-4)
+    "Chile Summer Time": "-0300",      # CLST (UTC-3)
+
+    # Africa Timezones
+    "West Africa Time": "+0100",       # WAT (UTC+1)
+    "Central Africa Time": "+0200",    # CAT (UTC+2)
+    "East Africa Time": "+0300",       # EAT (UTC+3)
+    "South Africa Standard Time": "+0200", # SAST (UTC+2)
+
+    # Middle East Timezones
+    "Arabian Standard Time": "+0300",  # AST (UTC+3)
+    "Gulf Standard Time": "+0400",     # GST (UTC+4)
+    "Israel Standard Time": "+0200",   # IST (UTC+2)
+    "Iran Standard Time": "+0330",     # IRST (UTC+3:30)
 }
 
 # Set variable for inversion of colours, aimed at stopping screen burn
 invert_colors = False
 pen_color = 15
 pen_color_2 = 0
+
+# Set your latitude/longitude here (find yours by right clicking in Google Maps!)
+LAT = 52
+LNG = -0.0
+TIMEZONE = "auto"  # determines time zone from lat/long
+
+# Set the URL for the open meteo weather data
+URL = "https://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&daily=weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,winddirection_10m_dominant&timezone=" + TIMEZONE
+
+
 ############################################################################################################
 # Synchronize with NTP to set the current time
 def sync_ntp_time():
@@ -103,6 +178,8 @@ def get_pcf_time():
     current_time_pcf = time.mktime((year, month, day, hour, minute, second, weekday, yearday))
     return current_time_pcf
 
+    
+    
 # Define SHA1 constants and utility functions
 HASH_CONSTANTS = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
 
@@ -261,7 +338,7 @@ print(f"time.time {time.time()}")
 
 def display_otp():
     key_info = []
-    x = 230  # Initial x position
+    x = 130  # Initial x position
     y = 20  # Initial y position
 
     for key in keys:
@@ -526,6 +603,49 @@ def calculate_time_until_next_refresh():
     else:
         return 15 - (current_minutes % 15)  # Time left until the next 15-minute interval
 
+# get weather data
+def get_weather_data():
+    global weathercode, temperature, windspeed, date
+    print(f"Requesting URL: {URL}")
+    r = urequests.get(URL)
+    # open the json data
+    j = r.json()
+    print("Data obtained!")
+    print(j)
+
+    # parse relevant data from JSON
+    current = j["current_weather"]
+    temperature = current["temperature"]
+    windspeed = current["windspeed"]
+    weathercode = current["weathercode"]
+
+    r.close()
+
+# show current weather
+def show_weather():
+
+    if temperature is not None:
+        # Choose an appropriate icon based on the weather code
+        # Weather codes from https://open-meteo.com/en/docs
+        # Weather icons from https://fontawesome.com/
+        if weathercode in [71, 73, 75, 77, 85, 86]:  # codes for snow
+            png.open_file("/icons/icon-snow.png")
+        elif weathercode in [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82]:  # codes for rain
+            png.open_file("/icons/icon-rain.png")
+        elif weathercode in [1, 2, 3, 45, 48]:  # codes for cloud
+            png.open_file("/icons/icon-cloud.png")
+        elif weathercode in [0]:  # codes for sun
+            png.open_file("/icons/icon-sun.png")
+        elif weathercode in [95, 96, 99]:  # codes for storm
+            png.open_file("/icons/icon-storm.png")
+        png.decode(220, 20)
+        badger.set_pen(pen_color)
+        badger.text(f"{temperature}°C", 130,40, 2)
+
+
+    else:
+        display.text("", 5, 65, WIDTH, 1)
+
 ############################################################################################################
 # SET INITIAL STATE
 ############################################################################################################
@@ -543,6 +663,8 @@ badger.clear()
 display_otp()
 show_current_time()
 refresh_calendar()
+get_weather_data()
+show_weather()
 badger.update()
 
 ############################################################################################################
@@ -558,6 +680,7 @@ while True:
     if current_seconds == 0:
         display_otp()  # Display OTP
         show_current_time()  # Call the function to update the clock display
+        show_weather()
         display_current_and_next_events(global_current_event, global_next_event)  # Display cached events
         badger.update()
 
@@ -569,6 +692,8 @@ while True:
         display_otp()  # Display OTP
         show_current_time()  # Call the function to update the clock display
         refresh_calendar()  # Refresh calendar and update events
+        get_weather_data()
+        show_weather()
         time_since_last_refresh = 0  # Reset the timer after refresh
 
     # Check for Button A press
@@ -578,6 +703,7 @@ while True:
             display_otp()  # Display OTP
             show_current_time()  # Display the updated current time
             display_current_and_next_events(global_current_event, global_next_event)  # Display cached events
+            show_weather()
             badger.update()
 
             invert_colors = not invert_colors  # Toggle colors
@@ -594,8 +720,9 @@ while True:
             display_otp()  # Display OTP
             show_current_time()  # Display the updated current time
             refresh_calendar()  # Refresh calendar and update events
-            badger.update()
+            get_weather_data()
 
+            badger.update()
             # Fully reset time_since_last_refresh to 0 since a manual refresh was triggered
             time_since_last_refresh = 0  # Manual refresh means no time has passed since the last refresh
 
@@ -625,7 +752,14 @@ while True:
                 badger.set_pen(0)
                 badger.clear()
                 badger.set_pen(15)
-                badger.text("Waking up...press b to refresh", 10, 10, WIDTH, 1.0)
+                badger.text("Waking up...", 10, 10, WIDTH, 1.0)
+                badger.update()
+                utime.sleep(1)
+                display_otp()  # Display OTP
+                show_current_time()  # Display the updated current time
+                refresh_calendar()  # Refresh calendar and update events
+                get_weather_data()
+                show_weather()
                 badger.update()
                 utime.sleep(1)  # Small delay for visual feedback
                 break  # Exit sleep loop and resume normal operation
