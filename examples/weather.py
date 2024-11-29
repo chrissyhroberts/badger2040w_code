@@ -18,6 +18,7 @@ LAT = 52.104
 LNG = -0.0227
 TIMEZONE = "auto"  # determines time zone from lat/long
 
+
 URL = "https://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&daily=weathercode,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,winddirection_10m_dominant&timezone=" + TIMEZONE
 URL2 = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&hourly=pm10,pm2_5,uv_index,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen"
 
