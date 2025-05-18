@@ -9,12 +9,11 @@ from pcf85063a import PCF85063A
 
 # ==== CONFIGURATION ====
 csv_file_path = "data/logged_data.csv"
-LOG_INTERVAL = 60  # seconds between measurements
-y_scale = 100      # initial scale for charts
+LOG_INTERVAL = 1800  # seconds between measurements
+y_scale = 100
 
 # ==== INIT HARDWARE ====
 display = badger2040.Badger2040()
-display.set_update_speed(2)
 display.set_thickness(4)
 i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))
 rtc = PCF85063A(i2c)
@@ -32,13 +31,16 @@ except OSError as e:
 def clear():
     display.set_pen(15)
     display.clear()
-    display.set_pen(0)
     display.set_font("bitmap8")
+
+    # Top and bottom bars
+    display.set_pen(0)
     display.rectangle(0, 0, WIDTH, 10)
-    display.rectangle(0, HEIGHT-10, WIDTH, HEIGHT-10)
+    display.rectangle(0, HEIGHT - 10, WIDTH, 10)
+
+    # White title on top bar
     display.set_pen(15)
     display.text("Temp/Humidity Logger", 10, 1, WIDTH, 0.6)
-    display.set_pen(0)
 
 def get_iso_timestamp():
     now = rtc.datetime()
@@ -94,8 +96,13 @@ try:
             print("Changed y_scale to:", y_scale)
             utime.sleep_ms(200)
 
-        # === Clear + Axes ===
+        # === Full clear and redraw ===
+        display.set_update_speed(badger2040.UPDATE_NORMAL)
+        display.set_pen(15)
+        display.clear()
         clear()
+
+        # === Axes ===
         display.set_pen(0)
         display.line(chart_origin_x, chart_origin_y + chart_height,
                      chart_origin_x + chart_width, chart_origin_y + chart_height)
@@ -143,14 +150,21 @@ try:
         if temperature_values:
             avg_temp = sum(temperature_values) / len(temperature_values)
             avg_hum = sum(humidity_values) / len(humidity_values)
-            display.set_pen(15)
-            display.text(f"Avg: {avg_temp:.1f}°C | {avg_hum:.1f}%RH", 150, HEIGHT - 9, WIDTH, 0.6)
-            display.text(f"Now: {temperature:.1f}°C | {humidity:.1f}%RH", 170, 1, WIDTH, 0.6)
-            display.text(get_iso_timestamp(), 10, HEIGHT - 9, WIDTH, 0.6)
 
+            # White text over black bars
+            display.set_pen(15)
+            display.text(f"Now: {temperature:.1f}°C | {humidity:.1f}%RH", 170, 1, WIDTH, 0.6)
+            display.text(f"Avg: {avg_temp:.1f}°C | {avg_hum:.1f}%RH", 150, HEIGHT - 9, WIDTH, 0.6)
+            display.text(timestamp, 10, HEIGHT - 9, WIDTH, 0.6)
+
+        # === Show display ===
         display.update()
+
+        # === Wait for next measurement ===
         utime.sleep(LOG_INTERVAL)
 
 except KeyboardInterrupt:
     pass
+
+
 
