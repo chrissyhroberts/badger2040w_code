@@ -11,7 +11,8 @@ from pcf85063a import PCF85063A
 import urequests
 from machine import RTC
 import pngdec
-
+import ssl
+import socket
 
 #####
 
@@ -26,6 +27,27 @@ badger.set_update_speed(2)
 WIDTH = badger2040.WIDTH
 HEIGHT = badger2040.HEIGHT
 png = pngdec.PNG(badger.display)
+
+def _find_weekdays_in_month(year, month, weekday):
+    """
+    Return a sorted list of day‐of‐month integers in [1..31] that fall on `weekday`
+    (0=Mon…6=Sun) for the given year/month.
+    """
+    days = []
+    d = 1
+    while True:
+        try:
+            ts = utime.mktime((year, month, d, 0, 0, 0, 0, 0, -1))
+        except:
+            break
+        tm = utime.localtime(ts)
+        if tm[1] != month:  # rolled over to next month
+            break
+        if tm[6] == weekday:
+            days.append(d)
+        d += 1
+    return days
+
 
 # Function to read the calendar URL from a file
 def read_calendar_url_from_file(file_path):
@@ -51,7 +73,7 @@ else:
 
 
 # Set timezone offset
-timezone_offset = 0
+timezone_offset = 1
 
 timezone_offsets = {
     # North American Timezones
@@ -338,8 +360,8 @@ print(f"time.time {time.time()}")
 
 def display_otp():
     key_info = []
-    x = 130  # Initial x position
-    y = 20  # Initial y position
+    x = 10  # Initial x position
+    y = 100  # Initial y position
 
     for key in keys:
         name = key["name"]
@@ -381,8 +403,8 @@ def show_current_time():
     day = ('00' + str(day))[-2:]
     hour = ('00' + str(hour))[-2:]
     minute = ('00' + str(minute))[-2:]
-    badger.text(f"{year}-{month}-{day}", 10, 20, WIDTH, 2)
-    badger.text(f"{hour}:{minute}", 10, 40, WIDTH, 3)
+    badger.text(f"{year}-{month}-{day}", 220, 90, WIDTH, 1)
+    badger.text(f"{hour}:{minute}", 220, 100, WIDTH, 1)
 
 ############################################################################################################
 
@@ -391,137 +413,208 @@ def show_current_time():
 # Define functions for Calendar
 
 # Function to fetch and process the .ics data
+import urequests
+import utime
+
 def fetch_and_process_ics():
-    buffer = ""  # Buffer to accumulate data
-    in_event = False  # Flag to track if we're inside a VEVENT section
-    event_data = []  # List to store the current event's data
+    """
+    Stream the .ics from `ics_url` in small chunks,
+    decode with errors ignored, and yield each VEVENT as a list of lines.
+    """
+    global ics_url
+
+    if not ics_url or not ics_url.startswith("http"):
+        print("ICS URL is invalid or missing.")
+        yield None
+        return
+
+    print(f"Fetching ICS from: {ics_url}")
 
     try:
-        response = urequests.get(ics_url)
-        if response.status_code == 200:
-            print(f"Successfully connected: {response.status_code}")
-            print(f"Headers: {response.headers}")
-
-            while True:
-                chunk = response.raw.read(2048)  # Read in 2048-byte chunks
-                if not chunk:
-                    break
-
-                try:
-                    decoded_chunk = chunk.decode('utf-8')  # Decode without 'errors' argument
-                except Exception as e:
-                    print(f"Error decoding chunk: {e}")
-                    break  # Exit on error
-
-                buffer += decoded_chunk
-                lines = buffer.splitlines(keepends=True)
-                buffer = ""  # Clear the buffer
-
-                for line in lines:
-                    if line.startswith("BEGIN:VEVENT"):
-                        in_event = True
-                        event_data = []  # Start collecting event data
-                    if in_event:
-                        event_data.append(line)
-                    if line.startswith("END:VEVENT"):
-                        in_event = False
-                        yield event_data  # Yield the complete event
-                        event_data = []  # Reset for the next event
-
-                if lines[-1][-1] != '\n':  # If the last line was incomplete, keep it in the buffer
-                    buffer = lines[-1]
-        else:
-            print(f"Failed to fetch calendar data. Status code: {response.status_code}")
-            yield None
+        resp = urequests.get(ics_url, headers={"User-Agent": "Mozilla/5.0"})
     except Exception as e:
-        print(f"Request failed: {e}")
+        print("Request failed:", e)
         yield None
-    finally:
+        return
+
+    if resp.status_code != 200:
+        print(f"HTTP {resp.status_code} fetching ICS")
+        resp.close()
+        yield None
+        return
+
+    buffer = ""       # holds any partial line
+    in_event = False
+    event_data = []
+
+    # read in small chunks to save RAM
+    while True:
+        chunk = resp.raw.read(512)
+        if not chunk:
+            break
+
+        # decode with ignore so no UnicodeError
         try:
-            response.close()
+            text = chunk.decode("utf-8", "ignore")
+        except TypeError:
+            # fallback if ignore not supported
+            try:
+                text = chunk.decode("utf-8")
+            except Exception as e:
+                print("Decoding error, skipping chunk:", e)
+                continue
         except Exception as e:
-            print(f"Error closing response: {e}")
-
-# Parse events for today's date and handle the TZID (time zone information)
-def parse_ics_for_today(ics_generator):
-    events = []
-    now = list(time.localtime())
-    today = "{:04d}{:02d}{:02d}".format(now[0], now[1], now[2])
-    print("Local date (today):", today)
-
-    for event_data in ics_generator:
-        if event_data is None:
+            print("Decoding error, skipping chunk:", e)
             continue
 
-        event = {}
-        tzoffsetfrom = None
-        tzid = None
+        buffer += text
+        lines = buffer.split("\n")
+        buffer = lines.pop()  # last piece may be partial
 
-        print("\nProcessing new event...")
+        for line in lines:
+            line = line.rstrip("\r")
+            if line == "BEGIN:VEVENT":
+                in_event = True
+                event_data = []
+            if in_event:
+                event_data.append(line)
+            if line == "END:VEVENT" and in_event:
+                in_event = False
+                yield event_data
 
-        for line in event_data:
-            line = line.strip()
-            if line.startswith("SUMMARY:"):
-                event["name"] = line[len("SUMMARY:"):].strip()
-            elif line.startswith("DTSTART;TZID="):
-                tzid = line.split("=")[1].split(":")[0].strip()
-                dtstart = line.split(":")[-1].strip()
-                event["start"] = dtstart
-                print(f"Event start time (before adjustment): {event['start']}")
-                print(f"Detected time zone: {tzid}")
-            elif line.startswith("DTEND;TZID="):
-                tzid = line.split("=")[1].split(":")[0].strip()
-                dtend = line.split(":")[-1].strip()
-                event["end"] = dtend
-                print(f"Event end time (before adjustment): {event['end']}")
-            elif line.startswith("TZOFFSETFROM:"):
-                tzoffsetfrom = line[len("TZOFFSETFROM:"):].strip()
-                print(f"Captured TZOFFSETFROM value: {tzoffsetfrom}")
+    resp.close()
 
-        if tzoffsetfrom is None and tzid is not None:
-            tzoffsetfrom = timezone_offsets.get(tzid, "+0000")
-            print(f"Inferred TZOFFSETFROM from TZID ({tzid}): {tzoffsetfrom}")
 
-        def parse_datetime(dt_str):
-            year = int(dt_str[0:4])
-            month = int(dt_str[4:6])
-            day = int(dt_str[6:8])
-            hour = int(dt_str[9:11])
-            minute = int(dt_str[11:13])
-            second = int(dt_str[13:15])
-            return time.mktime((year, month, day, hour, minute, second, 0, 0, -1))
+def parse_ics_for_today(ics_generator):
+    """
+    Consume VEVENT blocks, honor DTSTART/DTEND, RRULE, EXDATE, and return
+    { summary: {start, end}, … } for every occurrence that falls on today's date.
+    """
+    # weekday map
+    day_map = {"MO":0,"TU":1,"WE":2,"TH":3,"FR":4,"SA":5,"SU":6}
 
-        def format_datetime(timestamp):
-            tm = time.localtime(timestamp)
-            return "{:04d}{:02d}{:02d}T{:02d}{:02d}{:02d}".format(
-                tm[0], tm[1], tm[2], tm[3], tm[4], tm[5])
+    # today
+    now        = utime.localtime()
+    today_key  = "{:04d}{:02d}{:02d}".format(now[0], now[1], now[2])
+    today_wday = now[6]
+    today_dom  = now[2]
 
-        def apply_offset(event_time, tz_offset):
-            sign = 1 if tz_offset[0] == '+' else -1
-            offset_hours = int(tz_offset[1:3]) * sign
-            offset_minutes = int(tz_offset[3:5]) * sign
-            total_offset_seconds = (offset_hours * 3600) + (offset_minutes * 60)
+    events = {}
 
-            print(f"\nApplying timezone adjustment for {tz_offset}:")
-            event_timestamp = parse_datetime(event_time)
-            adjusted_timestamp = event_timestamp - total_offset_seconds
-            print(f"   Adjusted to UTC: {time.localtime(adjusted_timestamp)}")
+    for vevent in ics_generator:
+        if not vevent:
+            continue
 
-            return format_datetime(adjusted_timestamp)
+        summary   = None
+        raw_start = None
+        raw_end   = None
+        rrule     = None
+        exdates   = []
 
-        if "start" in event:
-            event["start"] = apply_offset(event["start"], tzoffsetfrom)
-            print(f"Adjusted event start time: {event['start']}")
+        # 1) Extract fields
+        for line in vevent:
+            l = line.strip()
+            if l.startswith("SUMMARY:"):
+                summary = l.split(":",1)[1]
+            elif l.startswith("DTSTART"):
+                raw_start = l.split(":",1)[1]
+            elif l.startswith("DTEND"):
+                raw_end = l.split(":",1)[1]
+            elif l.startswith("RRULE:"):
+                rrule = l.split(":",1)[1]
+            elif l.startswith("EXDATE"):
+                for dt in l.split(":",1)[1].split(","):
+                    exdates.append(dt)
 
-        if "end" in event:
-            event["end"] = apply_offset(event["end"], tzoffsetfrom)
-            print(f"Adjusted event end time: {event['end']}")
+        # skip if no summary or start
+        if not summary or not raw_start:
+            continue
 
-        if event.get("start", "")[:8] == today:
-            events.append(event)
-            print(f"Event '{event['name']}' is happening today. Added to the list.")
+        # check one‐off event
+        if raw_start.startswith(today_key):
+            events[summary] = {"start": raw_start, "end": raw_end}
+            continue
 
+        # if no RRULE, nothing more to do
+        if not rrule:
+            continue
+
+        # parse RRULE into a dict
+        parts = {}
+        for token in rrule.split(";"):
+            if "=" in token:
+                k, v = token.split("=",1)
+                parts[k] = v
+
+        freq = parts.get("FREQ")
+        # enforce UNTIL if present
+        until = parts.get("UNTIL","")
+        if until:
+            # YYYYMMDD[T…]Z
+            if today_key > until.rstrip("Z")[0:8]:
+                continue
+
+        occurrence = None
+
+        if freq == "WEEKLY":
+            # BYDAY=MO,TH etc
+            byday = parts.get("BYDAY","").split(",")
+            allowed = [day_map[d] for d in byday if d in day_map]
+            if today_wday in allowed:
+                occurrence = today_key + raw_start[8:]
+
+        elif freq == "MONTHLY":
+            # try BYMONTHDAY first
+            if "BYMONTHDAY" in parts:
+                for md in parts["BYMONTHDAY"].split(","):
+                    if md.isdigit() and int(md) == today_dom:
+                        occurrence = today_key + raw_start[8:]
+                        break
+            # then BYDAY ordinals, e.g. 1MO or -1FR
+            if not occurrence and "BYDAY" in parts:
+                for token in parts["BYDAY"].split(","):
+                    # split ordinal vs day
+                    day_str = token[-2:]
+                    ord_str = token[:-2]
+                    if day_str not in day_map:
+                        continue
+                    wd = day_map[day_str]
+
+                    if ord_str:
+                        # numeric ordinal
+                        n = int(ord_str)  # e.g. 1, -1, 2…
+                        month_days = _find_weekdays_in_month(now[0], now[1], wd)
+                        # check positive or negative index
+                        try:
+                            if n > 0 and month_days[n-1] == today_dom:
+                                occurrence = today_key + raw_start[8:]
+                                break
+                            if n < 0 and month_days[n]   == today_dom:
+                                occurrence = today_key + raw_start[8:]
+                                break
+                        except IndexError:
+                            pass
+                    else:
+                        # no ordinal → every matching weekday in the month
+                        if today_wday == wd:
+                            occurrence = today_key + raw_start[8:]
+                            break
+
+        # you can add FREQ=DAILY / YEARLY here if needed…
+
+        # skip if this date is explicitly excluded
+        if occurrence and occurrence in exdates:
+            occurrence = None
+
+        if occurrence:
+            events[summary] = {"start": occurrence, "end": today_key + raw_end[8:]}
+
+    print("Today's events dict:", events)
+    if not events:
+        print("No events found for today.")
     return events
+
+
 # Function to get current and next events
 def get_current_and_next_events(events):
     current_time = get_current_time_ics_format()  # Get current time in ICS format
@@ -572,29 +665,82 @@ def display_current_and_next_events(current_event, next_event):
     else:
         badger.text("No More meetings", 10, y + 25, WIDTH, 2)
 
+def display_event_list(events):
+    """
+    Draw all events on the Badger, 10 px lower per item.
+    Expects `events` as a list of dicts with 'start', 'end', 'name'.
+    """
+    badger.set_font("bitmap8")
+    badger.rectangle(0, 0, WIDTH, 10)
+    badger.set_pen(pen_color_2)
+    badger.text("Badger Dashboard", 10, 1, WIDTH, 0.6)
 
-# Declare global variables to store current and next events
-global_current_event = None
-global_next_event = None
+    badger.set_pen(pen_color)
+    y = 20
+    dy = 10
 
+    # If no events, show a placeholder
+    if not events:
+        badger.text("No events today", 10, y, WIDTH, 2)
+        return
+
+    for ev in events:
+        # time slice HHMM–HHMM
+        times = f"{ev['start'][9:13]} {ev['end'][9:13]}"
+        badger.text(times, 10, y, WIDTH, 1)
+        # event name
+        badger.text(ev['name'], 60, y, WIDTH-60, 1)
+        y += dy
+        if y > HEIGHT - dy:
+            break  # stop if we run out of vertical space
+        
+
+    
 # Refresh calendar data
+global_events = []
+
 def refresh_calendar():
-    global global_current_event, global_next_event  # Access the global variables
+    global global_events  # make the events list available everywhere
+    global global_current_event, global_next_event
 
-    ics_generator = fetch_and_process_ics()  # Fetch the calendar data
-    events = parse_ics_for_today(ics_generator)  # Parse today's events
+    # Fetch & parse
+    ics_gen       = fetch_and_process_ics()
+    events_dict   = parse_ics_for_today(ics_gen)
 
-    if events:
+    if events_dict:
+        # Convert dict→list of dicts and sort by start time
+        events = sorted(
+            [
+                {"name": name,
+                 "start": times["start"],
+                 "end":   times["end"]}
+                for name, times in events_dict.items()
+            ],
+            key=lambda e: e["start"]
+        )
+
+        # Store it in your global
+        global_events = events
+
         print(f"Events found: {len(events)}")
-        print(events)
-        global_current_event, global_next_event = get_current_and_next_events(events)  # Store events globally
-        display_current_and_next_events(global_current_event, global_next_event)  # Update display
+        display_event_list(events)
+
+        # (Optionally keep your current/next globals too)
+        # global_current_event, global_next_event = get_current_and_next_events(
+        #     {e["name"]: {"start": e["start"], "end": e["end"]} for e in events}
+        # )
 
     else:
+        global_events = []  # clear it if no events
         print("No events found for today.")
         global_current_event = None
-        global_next_event = None
+        global_next_event   = None
 
+     #   badger.clear()
+        badger.text("No events today", 10, HEIGHT // 2, WIDTH, 2)
+     #   badger.update()
+        
+        
 # Calculate the time left until the next 15-minute mark after manual refresh
 def calculate_time_until_next_refresh():
     current_minutes = time.localtime()[4]  # Get the current minute
@@ -640,7 +786,7 @@ def show_weather():
             png.open_file("/icons/icon-storm.png")
         png.decode(220, 20)
         badger.set_pen(pen_color)
-        badger.text(f"{temperature}°C", 130,40, 2)
+        badger.text(f"{temperature}°C", 220,110,1)
 
 
     else:
@@ -681,7 +827,7 @@ while True:
         display_otp()  # Display OTP
         show_current_time()  # Call the function to update the clock display
         show_weather()
-        display_current_and_next_events(global_current_event, global_next_event)  # Display cached events
+        display_event_list(global_events)
         badger.update()
 
     # Increment time since last refresh
@@ -702,7 +848,7 @@ while True:
         if badger.pressed(badger2040.BUTTON_A):  # Ensure it's still pressed
             display_otp()  # Display OTP
             show_current_time()  # Display the updated current time
-            display_current_and_next_events(global_current_event, global_next_event)  # Display cached events
+            display_event_list(global_events)
             show_weather()
             badger.update()
 
@@ -767,4 +913,5 @@ while True:
 
     # Sleep to reduce polling frequency and save power (1 second sleep to catch the seconds turning 0)
     utime.sleep(1)
+
 
